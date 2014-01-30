@@ -1,0 +1,4 @@
+# export everything (in development mode)
+
+exportPattern(".*")
+
