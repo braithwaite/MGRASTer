@@ -11,6 +11,8 @@
 ### retrieves and saves the API tree (for development purposes),
 ### or returns it (for dynamic update)
 
+### NOTE - WITH RENEW=TRUE SHOULD WRITE TO INSTALLATION?
+
 .build.API.tree <- function (save = FALSE, fname = "API.Rda") {
 	message(.my.name, ": rebuilding API resource tree")
 	require (RJSONIO)

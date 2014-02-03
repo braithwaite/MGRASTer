@@ -12,6 +12,8 @@
 ### an all-purpose interface for the MG-RAST API
 ##############################################################################
 
+# --> apply as.character to all parameters
+
 call.MGRAST <- function (
 	resource, 										# what resource
 	request=NULL, 									# what request (there is a default for some (all?) resources)
@@ -25,7 +27,6 @@ call.MGRAST <- function (
 
 require(RJSONIO)
 require(RCurl)
-require(matR)
 
 ### just to save typing:
 server.path <- .session$server()
@@ -74,47 +75,41 @@ x <- names(api[[resource]]) [pmatch(request, names(api[[resource]]))]
 if(is.na(x)) stop("invalid request: ", request, " for resource: ", resource)
 request <- x
 
-cat("resource:", resource,
-	"---request:", request,
-	"---required:", paste(names(api[[resource]][[request]]$parameters$required), collapse="/"),
-	"---options:", paste(names(api[[resource]][[request]]$parameters$options), collapse="/"), 
-	"\n", sep="")
+cat(resource, "/", request, "-",
+	"-[", paste(names(api[[resource]][[request]]$parameters$required), collapse="/"), "]-",
+	"-[", paste(names(api[[resource]][[request]]$parameters$options), collapse="/"), "]-\n", sep="")
 
 ### combine parameters given in "..." with those given in "param"
 param <- unlist(append(list(...), param))
 
-## partial-match params
+### partial-match params
 if (length (param) > 0) {
-	cat("***given***\n")
-	print(param)
-
 	pnames <- union(names(api[[resource]][[request]]$parameters$required),
 					names(api[[resource]][[request]]$parameters$options))
 	x <- pnames [pmatch(names(param), pnames, dup=TRUE)]
 	if (any (is.na (x))) stop("parameter(s) invalid or unidentified: ", paste(names(param) [is.na (x)], collapse=" "))
 	names(param) <- x
-	cat("***matched***\n")
-	print(param)
+	cat("matched: ", paste(names(param),"=",param,sep="",collapse="/"), "\n")
 }
-
 required <- names(param) %in% names(api[[resource]][[request]]$parameters$required)
-cat("required:      ", names(param)[required],"\n")
 optional <- names(param) %in% names(api[[resource]][[request]]$parameters$options)
-cat("options:       ", names(param)[optional],"\n")
+# cat("required:      ", names(param)[required],"\n")
+# cat("options:       ", names(param)[optional],"\n")
 
-# check required parameters present
+### check required parameters present
 check.required <- names(api[[resource]][[request]]$parameters$required) %in% names(param)
 if(!all(check.required)) 
 	warning("required parameter(s) missing: ", 
 			names(api[[resource]][[request]]$parameters$required)[!check.required])
 
-# DO IDs REQUIRE SPECIAL HANDLING HERE?  I remember something bizarre like http://path/path/id;id;id?options
-# let's assume not.
+### do ID's require special handling here?  
+### I remember something bizarre like http://path/path/id;id;id?options
+### let's assume not.
 
 required.str <- paste (param[required], sep="/")
-cat("required string:  ", required.str, "\n")
 optional.str <- paste(names(param)[optional], param[optional], sep="=", collapse="&")
-cat("optional string:  ", optional.str,"\n")
+# cat("required string:  ", required.str, "\n")
+# cat("optional string:  ", optional.str,"\n")
 
 path <- paste(server.path, resource, sep="/")
 if (length(request) > 0)
@@ -124,27 +119,23 @@ if (length(required.str) > 0)
 call.url <- path
 if(length(optional.str) > 0)
 	call.url <- paste(call.url, optional.str, sep="?")
-# cat(call.url,"\n\n")
-
+	
 if(!issue) return(call.url)
 
 # REPLACE WITH IMPLEMENTATION VIA RCURL
-
 # DOWNLOAD NEEDS TESTING
-
-if(is.null(file)) x <- readLine(call.url, warn=TRUE)
-else x <- download.file(call.url, file, quiet=FALSE)
-
 # PARSING NEEDS TESTING
+# CONFORMITY TEST NEEDS TESTING
+
+if(is.null(file)) x <- readLines(call.url, warn=FALSE)
+else x <- download.file(call.url, file, quiet=FALSE)
 
 if(!parse) return(x)
 if (!isValidJSON(x, asText=TRUE)) warning("valid JSON not received")
 px <- fromJSON(x, asText=TRUE, simplify=TRUE)
 if(!verify) return(px)
 
-# CONFORMITY TEST NEEDS TESTING
-
-if(!is.conforming(resource, request, px, quiet=TRUE)) stop("aborting due to non-conforming resource")
+# if(!is.conforming(resource, request, px, quiet=TRUE)) stop("aborting due to non-conforming resource")
 
 px
 }

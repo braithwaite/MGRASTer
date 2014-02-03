@@ -1,39 +1,57 @@
+####################################################################################
+### tests of the local API representation
+###
+### annotation compute download inbox library m5nr matrix metadata metagenome 
+### profile project sample validation status
+####################################################################################
 
-# check the local API representation in a general way:
-names(api)
-names(api$matrix)
-names(api$matrix$organism)
-names(api$matrix$organism$method)
-api$matrix$organism$method
-names(api$matrix$organism$parameters)
-names(api$matrix$organism$parameters$options)
-names(api$matrix$organism$attributes)
-names(api$status)
-names(api$status$instance)
-names(api$status$instance$attributes)
-api$status$instance$attributes$data
 
-# and again:
-sapply(api, names)
-sapply(api$annotation, names)
-sapply(api$annotation$info, names)
-sapply(api$annotation$info$parameters, names)
-sapply(api$status, names)
-sapply(api$status$instance, names)
-sapply(api$status$instance$parameters, names)
+####################################################################################
+### resources
+####################################################################################
 
-# check all resource-requests pairs:
-for(n in names(api)) cat(n, " ", names(api[[n]]), "\n")
+api <- .session$api()
+resources <- paste(names(api), collapse=",")
+print(resources, quote=F)
 
-# for each resource-request: check required & optional parameters
+####################################################################################
+### resource-requests
+####################################################################################
+
+for(n in names(api)) {
+	s <- paste(n, ":   ", paste(names(api[[n]]), collapse=","), sep = "")
+	print(s, quote=F)
+}
+
+####################################################################################
+### required & optional parameters
+####################################################################################
+
 x <- sapply(names(api), function(x) { 
 		sapply(names(api[[x]]), function(y) 
-			c(required =
-					paste(names(api[[x]][[y]]$parameters$required),collapse=" "),
-				options=
-				  	paste(names(api[[x]][[y]]$parameters$options),collapse=" ")),
+			list(required =
+					names(api[[x]][[y]]$parameters$required),
+				options =
+				  	names(api[[x]][[y]]$parameters$options)),
 			simplify=F)  }, 
 		simplify=F)
 x <- unlist(x, rec=F)
-sapply(x, `[`, "required")
-print(unname(sapply(x, `[`, "options")))
+t <- sapply(sapply(x, `[[`, "required"),paste,collapse=",")
+required <- cbind(names(t),unname(t))
+t <- sapply(sapply(x, `[[`, "options"),paste,collapse=",")
+options <- cbind(names(t),unname(t))
+
+print(required, quote=F)
+print(options, quote=F)
+
+
+####################################################################################
+### examples
+####################################################################################
+
+x <- sapply(names(api), function(x)
+		sapply(names(api[[x]]), function(y) api[[x]][[y]]$example[1], simplify=F),
+		simplify=F)
+x <- unlist(x)
+
+print(unname(x), quote=F)

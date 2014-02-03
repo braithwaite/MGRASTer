@@ -1,7 +1,12 @@
+####################################################################################
+### tests of parameter parsing
+### --> don't issue calls here
+### --> make checks thorough
+###
+### annotation compute download inbox library m5nr matrix metadata metagenome 
+### profile project sample validation status
+####################################################################################
 
-# test parameter parsing
-# should not actually use network, here
-# need to randomly generate, here
 
 call.MGRAST("ann",issue=F)
 call.MGRAST("ann","seque",issue=F)
@@ -19,6 +24,3 @@ call.MGRAST("mat", "func", fil="a",issue=F)
 call.MGRAST("mat", "func", filter="a",issue=F)
 call.MGRAST("mat", "func", filter="a",filter_="b",issue=F)
 call.MGRAST("mat", "func", filter="a",filter_l="b",filter_s="c",issue=F)
-
-# etc...
-# call.MGRAST(,issue=F)
