@@ -1,8 +1,5 @@
 # ID required but not documented for compute/alphadiversity call
-# some info pages don't work
-# as.character all parameters
-# cv-based value matching
-# add 'mgp' etc prefixes
+
 
 ####################################################################################
 ### tests of live calls
@@ -45,9 +42,9 @@ call.MGRAST('li', 'qu', li=20, or='na')
 call.MGRAST('li', 'ins', id=52924, ve='fu')
 
 ### http://api.metagenomics.anl.gov/m5nr/ontology?source=Subsystems&min_level=level3
-call.MGRAST('m5', 'on',so='Sub',mi='level3')
+call.MGRAST('m5', 'on', so='Sub', mi='level3')
 ### http://api.metagenomics.anl.gov/m5nr/taxonomy?filter=Bacteroidetes&filter_level=phylum&min_level=genus
-call.MGRAST('m5', 'ta',filter='Bacteroidetes',filter_l='phylum',mi='genus')
+call.MGRAST('m5', 'ta', filter='Bacteroidetes', filter_l='phylum', mi='genus')
 ### http://api.metagenomics.anl.gov/m5nr/sources
 call.MGRAST('m5', 'so')
 ### http://api.metagenomics.anl.gov/m5nr/accession/YP_003268079.1
