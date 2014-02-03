@@ -12,7 +12,12 @@
 ### an all-purpose interface for the MG-RAST API
 ##############################################################################
 
-# --> apply as.character to all parameters
+
+# add 'mgp' etc prefixes
+if (cases under which we expect an ID) scrubIDs(, resource)
+
+
+
 
 call.MGRAST <- function (
 	resource, 										# what resource
@@ -21,7 +26,7 @@ call.MGRAST <- function (
 	param = NULL, 		 							# pass parameters in a list instead
 	parse=TRUE, 									# parse JSON objects
 	verify=parse,  									# attempt to validate resource structure and contents?
-	bugs=c("ignore","warn","stop","ask","report"),	# report bugs
+	bugs=c("ignore","warn","stop","ask","report"),					# report bugs
 	issue=TRUE,										# issue the call or not
 	file=NULL) {									# file destination for received resource
 
@@ -80,7 +85,8 @@ cat(resource, "/", request, "-",
 	"-[", paste(names(api[[resource]][[request]]$parameters$options), collapse="/"), "]-\n", sep="")
 
 ### combine parameters given in "..." with those given in "param"
-param <- unlist(append(list(...), param))
+--> check functionality of as.character here
+param <- as.character (unlist(append(list(...), param)))
 
 ### partial-match params
 if (length (param) > 0) {
@@ -91,6 +97,12 @@ if (length (param) > 0) {
 	names(param) <- x
 	cat("matched: ", paste(names(param),"=",param,sep="",collapse="/"), "\n")
 }
+
+# cv-based value matching
+--> api[[resource]][[request]]$parameters$required[[param]]$cv
+--> api[[resource]][[request]]options[[param]]$cv
+
+
 required <- names(param) %in% names(api[[resource]][[request]]$parameters$required)
 optional <- names(param) %in% names(api[[resource]][[request]]$parameters$options)
 # cat("required:      ", names(param)[required],"\n")
@@ -113,6 +125,8 @@ optional.str <- paste(names(param)[optional], param[optional], sep="=", collapse
 
 path <- paste(server.path, resource, sep="/")
 if (length(request) > 0)
+--> # cases of request omitted, e.g., query/instance
+--> request %in% c ("query","instance")
 	path <- paste(path, request, sep="/")
 if (length(required.str) > 0)
 	path <- paste(path, required.str, sep="/")
