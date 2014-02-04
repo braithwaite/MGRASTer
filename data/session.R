@@ -17,7 +17,7 @@
 	message(.my.name, ": rebuilding API resource tree")
 	require (RJSONIO)
 
-	server.path <- .session$server()
+	server.path <- .MGRAST$server()
 	resource.page <- fromJSON(readLines(server.path, warn=FALSE), asText=TRUE, simplify=TRUE)
 	resources <- unname(sapply(resource.page$resources, `[`, "name"))
 	resources <- c(resources, "status")
@@ -28,12 +28,22 @@
 		api[[res]] <- request.page$requests
 		names(api[[res]]) <- sapply(api[[res]], `[[`, "name")
 	}
+
+#-------FIX ERROR IN API DOCUMENTATION
+#-------required "id" parameter undocumented in compute/alphadiversity
+	api$compute$alphadiversity$parameters$required <- api$annotation$sequence$parameters$required
+
+#-------FIX ERROR IN API DOCUMENTATION
+#-------"m5nr" resource contains duplicates of requests
+	api$m5nr <- api$m5nr [1:10]
+
 	if (save) {
 		save (api, file=fname)
 		fname
 	}
 	else api
 }
+
 
 .MGRAST <- (function () {
 	.server <- "http://api.metagenomics.anl.gov"
@@ -50,8 +60,8 @@
 		else .server <<- s
 	api <- function (renew = FALSE) {
 		built <- (renew || is.null (.api))
-		if (is.null (.api)) .api <<- .read.API.tree ()
-		else if (renew) .api <<- .build.API.tree ()
+		if (renew) .api <<- .build.API.tree ()
+		else if (is.null (.api)) .api <<- .read.API.tree ()
 		if (built) {
 			.resources <<- names(api())
 			.requests <<- sapply(.resources, function (res) names(.api[[res]]))

@@ -1,6 +1,3 @@
-# ID required but not documented for compute/alphadiversity call
-# repeated examples in m5nr resource?
-# validation <template> and validation <data> work without ID but it is a required param
 
 ##############################################################################
 ### for the loading scheme, also see data/session.R
@@ -42,9 +39,9 @@ call.MGRAST <- function (
 	file=NULL) {									# save to file
 
 #-------just to save typing:
+server <- .MGRAST$server()
 api <- .MGRAST$api()
 resources <- .MGRAST$resources()
-server <- .MGRAST$server()
 requests <- .MGRAST$requests()
 examples <- .MGRAST$examples()
 required <- .MGRAST$required()
@@ -67,29 +64,30 @@ cv <- .MGRAST$cv()
 
 #-------match initial arguments
 resource <- match.arg(resource)
-request <- match.arg(request, resources[[res]]))
-
-cat(resource, "/", request, "-",
-	"-[", paste(names(api[[resource]][[request]]$parameters$required), collapse="/"), "]-",
-	"-[", paste(names(api[[resource]][[request]]$parameters$options), collapse="/"), "]-\n", sep="")
+request <- match.arg(request, requests[[resource]])
+cat(resource, "|", request, " ::: ",
+	paste(required[[resource]][[request]], collapse=" "), " ::: ",
+	paste(options[[resource]][[request]], collapse=" "), "\n", sep="")
 
 #-------combine parameters from "..." and "param"
 #-------and convert numbers (such as IDs) to strings
-param <- as.character (unlist(append(list(...), param)))
-
-#-------match params
+#-------"param" remains "list" to accommodate vectors of IDs
+param <- append(list(...), param)
 if (length (param) > 0) {
-	pnames <- union(names(api[[resource]][[request]]$parameters$required),
-					names(api[[resource]][[request]]$parameters$options))
-	x <- pnames [pmatch(names(param), pnames, dup=TRUE)]
-	if (any (is.na (x))) stop("parameter(s) invalid or unidentified: ", paste(names(param) [is.na (x)], collapse=" "))
+#-------use names of required parameters for unnamed parameters (typically "id" or "text")
+	if (is.null(names(param)))
+		is.na(names(param)) <- TRUE
+	j <- is.na(names(param)) | (names(param) == "")
+	if (any (j)) 
+		names(param)[j] <- required[[resource]][[request]]
+#-------now in the list all parameters have a (possibly abbreviated) name; match them
+	targets <- union(required[[resource]][[request]], options[[resource]][[request]])
+	x <- targets [pmatch(names(param), targets, duplicates.ok=TRUE)]
+	if (any(is.na(x)))
+		stop("parameter(s) unidentified: ", paste(names(param)[is.na(x)], collapse=" "))
 	names(param) <- x
-	cat("matched: ", paste(names(param),"=",param,sep="",collapse="/"), "\n")
+	cat(paste(names(param),"=",param,collapse=" ",sep=""), "\n")
 }
-
-#-------match values for controlled-vocabulary params
-
-#-------give names (of required parameters) to unnamed parameters
 
 required <- names(param) %in% names(api[[resource]][[request]]$parameters$required)
 optional <- names(param) %in% names(api[[resource]][[request]]$parameters$options)
@@ -103,10 +101,10 @@ if(!all(check.required))
 			names(api[[resource]][[request]]$parameters$required)[!check.required])
 
 #-------add prefixes (mgp, mgm, mgl, mgs) to IDs
-if (cases under which we expect an ID) scrubIDs(, resource)
+#-------and break up vectors of IDs
+# if (cases under which we expect an ID) scrubIDs(, resource)
 
-
-#-------break up IDs of length > 1
+#-------match to controlled-vocabulary
 
 required.str <- paste (param[required], sep="/")
 optional.str <- paste(names(param)[optional], param[optional], sep="=", collapse="&")

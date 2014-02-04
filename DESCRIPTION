@@ -2,8 +2,8 @@ Package: MGRASTer
 Type: Package
 Title: API Client for the MG-RAST Server
 Version: 0.1.0
-Depends: R (>= 3.0)
-Imports: RJSONIO, RCurl
+Depends: R (>= 3.0), utils, RJSONIO, RCurl
+Imports: 
 Suggests:
 URL: https://github.com/braithwaite/MGRASTer/
 Date: 2014-02-01

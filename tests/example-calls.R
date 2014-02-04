@@ -1,4 +1,6 @@
 
+library(MGRASTer)
+
 ####################################################################################
 ### test actual calls to the API 
 ####################################################################################
@@ -9,7 +11,7 @@ issue <- FALSE
 ### test info pages
 ####################################################################################
 
-for (res in resources) call.MGRAST (res, 'info', issue=issue)
+for (res in .MGRAST$resources()) call.MGRAST (res, 'info', issue=issue)
 
 ####################################################################################
 ### test examples provided in API online docs
@@ -24,7 +26,7 @@ call.MGRAST('an', 'si', 4447943.3, iden=80, ty='fu', so='KO', issue=issue)
 call.MGRAST('co', 'al', id=4447943.3, le='or', issue=issue)
 
 ### http://api.metagenomics.anl.gov/download/mgm4447943.3?file=350.1
-call.MGRAST('do', 'in', 4447943.3, fi=350.1, issue=issue)
+call.MGRAST('do', 'ins', 4447943.3, fi=350.1, issue=issue)
 ### http://api.metagenomics.anl.gov/download/mgm4447943.3?stage=650
 call.MGRAST('do', 'se', 4447943.3, st=650, issue=issue)
 
@@ -46,7 +48,7 @@ call.MGRAST('m5', 'al', 'IPR001478', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/md5/000821a2e2f63df1a3873e4b280002a8?source=InterPro
 call.MGRAST('m5', 'md', '000821a2e2f63df1a3873e4b280002a8', so='Int', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/function/sulfatase?source=GenBank
-call.MGRAST('m5', 'fu', 'sulfatase', so='GenBank', issue=issue)
+call.MGRAST('m5', 'fu', 'sulfatase', so='Ge', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/organism/akkermansia?source=KEGG
 call.MGRAST('m5', 'or', 'akkermansia', so='KE', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/sequence/MAGENHQWQGSIL?source=TrEMBL
@@ -54,13 +56,13 @@ call.MGRAST('m5', 'se', 'MAGENHQWQGSIL', so='Tr', issue=issue)
 
 ### http://api.metagenomics.anl.gov/matrix/organism?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&group_level=family&source=RefSeq&result_type=abundance&evalue=15
 call.MGRAST('ma', 'or', id=c(4447943.3, 4447192.3, 4447102.3, 4447103.3), 
-	gr='family', so='Ref', re='ab', ev=15, issue=issue)
+	gro='family', so='Ref', resu='ab', ev=15, issue=issue)
 ### http://api.metagenomics.anl.gov/matrix/function?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&group_level=level3&source=Subsystems&result_type=abundance&identity=80&filter_level=phylum&filter=Firmicutes
 call.MGRAST('ma', 'fu', id=c(4447943.3, 4447192.3, 4447102.3, 4447103.3), 
-	gr='level3', so='Sub', re='ab', iden=80, filter_l='phylum', filter='Firmicutes', issue=issue)
+	gro='level3', so='Sub', resu='ab', iden=80, filter_l='phylum', filter='Firmicutes', issue=issue)
 ### http://api.metagenomics.anl.gov/matrix/feature?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&source=KEGG&result_type=evalue&length=25
 call.MGRAST('ma', 'fe', id=c(4447943.3, 4447192.3, 4447102.3, 4447103.3), 
-	so='KE', re='ev', len=25, issue=issue)
+	so='KE', resu='ev', len=25, issue=issue)
 
 ### http://api.metagenomics.anl.gov/metadata/template
 call.MGRAST('metadata', 'te', issue=issue)
