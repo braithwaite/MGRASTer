@@ -1,3 +1,7 @@
+# ID required but not documented for compute/alphadiversity call
+# repeated examples in m5nr resource?
+# validation <template> and validation <data> work without ID but it is a required param
+
 ##############################################################################
 ### for the loading scheme, also see data/session.R
 ##############################################################################
@@ -12,42 +16,13 @@
 ### an all-purpose interface for the MG-RAST API
 ##############################################################################
 
-
-recommendations to repair broken API syntax
-
-<request> is required in the path for <resource>="matrix" and others.  However:
-
-For <resource>="sample" the API currently accepts:
-
-(1) http://api.metagenomics.anl.gov/sample/				(<request>="info")
-(2) http://api.metagenomics.anl.gov/sample?limit=20&order=name		(<request>="query")
-(3) http://api.metagenomics.anl.gov/sample/mgs25823			(<request>="instance")
-
-and does not accept:
-
-(4) http://api.metagenomics.anl.gov/sample/info			(<request>="info")
-(5) http://api.metagenomics.anl.gov/sample/query		(<request>="query")
-(6) http://api.metagenomics.anl.gov/sample/instance/mgs25823	(<request>="instance")
-
-Recommendation:
-It should not accept (2) or (3), and it should accept (4), (5), (6).
-<request> should be required in the path for all <resource>s.
-
-The result of the status quo is that "optional" parameters are not optional for <request>="query".
-
-That is aside from confusion caused by inconsistent syntax.  Related problems exist
-for <resource> = 'download','library','metagenome','profile','project','sample','status'
-
-
-
 call.MGRAST <- function (
-	resource = c("m5nr", names (.session$api())), 					# what resource
-	request = switch (match.arg (resource),
-#	pmatch (resource, names (.session$api())),
-			annotation="sequence",  ?
-			compute="normalize",    ?
-			download="instance",    ?
-			inbox="view",           ?
+	resource = .MGRAST$resources(), 					# what resource
+	request = switch (match.arg (resource),				# what request
+			annotation="sequence", 				 #?
+			compute="normalize",   				 #?
+			download="instance",   				 #?
+			inbox="view",          				 #?
 			library="query",
 			m5nr="sources",
 			matrix="function",
@@ -57,19 +32,24 @@ call.MGRAST <- function (
 			project="query",
 			sample="query",
 			validation="template",
-			status="info"),							# what request (there is a default for some (all?) resources)
-	..., 										# required and optional parameters appropriate to the resource requested
-	param = NULL, 		 							# pass parameters in a list instead
-	parse=TRUE, 									# parse JSON objects
-	verify=parse,  									# attempt to validate resource structure and contents?
-	bugs=c("ignore","warn","stop","ask","report"),					# report bugs
-	issue=TRUE,										# issue the call or not
-	file=NULL) {									# file destination for received resource
+			status="info"),
+	..., 									# parameters
+	param = NULL, 		 					# parameters in a list (instead or additionally)
+	parse=TRUE, 							# parse JSON?
+	verify=parse,  									# check retrieved object?
+	bugs=c("ignore","warn","stop","ask","report"),	# report bugs?
+	issue=TRUE,										# issue the call?
+	file=NULL) {									# save to file
 
-### just to save typing:
-api <- .session$api()
-resources <- names(api)
-server.path <- .session$server()
+#-------just to save typing:
+api <- .MGRAST$api()
+resources <- .MGRAST$resources()
+server <- .MGRAST$server()
+requests <- .MGRAST$requests()
+examples <- .MGRAST$examples()
+required <- .MGRAST$required()
+options <- .MGRAST$options()
+cv <- .MGRAST$cv()
 
 # ERRORS and BUGS
 # 
@@ -85,28 +65,19 @@ server.path <- .session$server()
 # 			stop(...)
 # 			})
 
-### partial-match resource
-# x <- resources [pmatch(resource, resources)]
-# if(is.na(x)) stop("invalid resource: ", resource)
-# resource <- x
-x <- list()
+#-------match initial arguments
 resource <- match.arg(resource)
-
-### partial-match request
-# x <- names(api[[resource]]) [pmatch(request, names(api[[resource]]))]
-# if(is.na(x)) stop("invalid request: ", request, " for resource: ", resource)
-# request <- x
-request <- match.arg(request, names(api[[resource]]))
+request <- match.arg(request, resources[[res]]))
 
 cat(resource, "/", request, "-",
 	"-[", paste(names(api[[resource]][[request]]$parameters$required), collapse="/"), "]-",
 	"-[", paste(names(api[[resource]][[request]]$parameters$options), collapse="/"), "]-\n", sep="")
 
-### combine parameters given in "..." with those given in "param"
---> check functionality of as.character here
+#-------combine parameters from "..." and "param"
+#-------and convert numbers (such as IDs) to strings
 param <- as.character (unlist(append(list(...), param)))
 
-### partial-match params
+#-------match params
 if (length (param) > 0) {
 	pnames <- union(names(api[[resource]][[request]]$parameters$required),
 					names(api[[resource]][[request]]$parameters$options))
@@ -116,41 +87,37 @@ if (length (param) > 0) {
 	cat("matched: ", paste(names(param),"=",param,sep="",collapse="/"), "\n")
 }
 
-# cv-based value matching
---> api[[resource]][[request]]$parameters$required[[param]]$cv
---> api[[resource]][[request]]options[[param]]$cv
+#-------match values for controlled-vocabulary params
 
-# where parameters are unnamed, try giving them the names of required parameters
+#-------give names (of required parameters) to unnamed parameters
 
 required <- names(param) %in% names(api[[resource]][[request]]$parameters$required)
 optional <- names(param) %in% names(api[[resource]][[request]]$parameters$options)
 # cat("required:      ", names(param)[required],"\n")
 # cat("options:       ", names(param)[optional],"\n")
 
-### check required parameters present
+#-------check required parameters present
 check.required <- names(api[[resource]][[request]]$parameters$required) %in% names(param)
 if(!all(check.required)) 
 	warning("required parameter(s) missing: ", 
 			names(api[[resource]][[request]]$parameters$required)[!check.required])
 
-# add 'mgp' etc prefixes to IDs
+#-------add prefixes (mgp, mgm, mgl, mgs) to IDs
 if (cases under which we expect an ID) scrubIDs(, resource)
 
-# also allow IDs to be vectors of length > 1
 
-### do ID's require special handling here?  
-### I remember something bizarre like http://path/path/id;id;id?options
-### let's assume not.
+#-------break up IDs of length > 1
 
 required.str <- paste (param[required], sep="/")
 optional.str <- paste(names(param)[optional], param[optional], sep="=", collapse="&")
 # cat("required string:  ", required.str, "\n")
 # cat("optional string:  ", optional.str,"\n")
 
-path <- paste(server.path, resource, sep="/")
+path <- paste(server, resource, sep="/")
 if (length(request) > 0)
---> # make exception for cases where request is omitted in tha path:  query/instance
---> request %in% c ("query","instance")
+#-------omit request names that the API (inconsistently) does not want: query, instance
+#-------omit "info" where it (inconsistently) fails to work: 
+#-------  'download','library','metagenome','profile','project','sample','status'
 	path <- paste(path, request, sep="/")
 if (length(required.str) > 0)
 	path <- paste(path, required.str, sep="/")
@@ -185,8 +152,8 @@ px
 is.conforming <- function (resource, request, object, quiet=FALSE) {
 
 ### just to save typing:
-api <- .session$api()
-server.path <- .session$server()
+api <- .MGRAST$api()
+server <- .MGRAST$server()
 
 # validation currently is only by presence/absence of top-level fields.
 # more sophisticated validation would looke something like:
