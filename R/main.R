@@ -35,6 +35,7 @@ call.MGRAST <- function (
 	parse=TRUE, 							# parse JSON?
 	verify=parse,  									# check retrieved object?
 	bugs=c("ignore","warn","stop","ask","report"),	# report bugs?
+	debug=FALSE,
 	issue=TRUE,										# issue the call?
 	file=NULL) {									# save to file
 
@@ -65,9 +66,10 @@ cv <- .MGRAST$cv()
 #-------match initial arguments
 resource <- match.arg(resource)
 request <- match.arg(request, requests[[resource]])
-cat(resource, "|", request, " ::: ",
-	paste(required[[resource]][[request]], collapse=" "), " ::: ",
-	paste(options[[resource]][[request]], collapse=" "), "\n", sep="")
+if (debug)
+	cat(resource, "|", request, " ::: ",
+		paste(required[[resource]][[request]], collapse=" "), " ::: ",
+		paste(options[[resource]][[request]], collapse=" "), "\n", sep="")
 
 #-------combine parameters from "..." and "param"
 #-------and convert numbers (such as IDs) to strings
@@ -84,66 +86,88 @@ if (length (param) > 0) {
 	targets <- union(required[[resource]][[request]], options[[resource]][[request]])
 	x <- targets [pmatch(names(param), targets, duplicates.ok=TRUE)]
 	if (any(is.na(x)))
-		stop("parameter(s) unidentified: ", paste(names(param)[is.na(x)], collapse=" "))
+		warning("no match (or not unique) for parameter(s): ", paste(names(param)[is.na(x)], collapse=" "))
 	names(param) <- x
-	cat(paste(names(param),"=",param,collapse=" ",sep=""), "\n")
-}
-
-required <- names(param) %in% names(api[[resource]][[request]]$parameters$required)
-optional <- names(param) %in% names(api[[resource]][[request]]$parameters$options)
-# cat("required:      ", names(param)[required],"\n")
-# cat("options:       ", names(param)[optional],"\n")
+	if (debug)
+		cat(paste(names(param),"=",param,collapse=" ",sep=""), "\n")
 
 #-------check required parameters present
-check.required <- names(api[[resource]][[request]]$parameters$required) %in% names(param)
-if(!all(check.required)) 
-	warning("required parameter(s) missing: ", 
-			names(api[[resource]][[request]]$parameters$required)[!check.required])
+	required.index <- names(param) %in% required[[resource]][[request]]
+	optional.index <- names(param) %in% options[[resource]][[request]]
+	check.required <- required[[resource]][[request]] %in% names(param)
+	if(!all(check.required)) 
+		warning("required parameter(s) missing: ", 
+				required[[resource]] [[request]] [!check.required])
+
+#-------match to controlled vocabularies
+	for (j in 1:length(param))
+		if (optional.index[j]) {
+			vocab <- cv[[resource]] [[request]] [[names(param)[j]]]
+			if (length (vocab) > 0) {
+				x <- vocab [pmatch(param[[j]], vocab)]
+				if (is.na (x))
+					warning("no match in controlled vocabulary: ", param[[j]])
+				param[[j]] <- x
+			}
+		}
 
 #-------add prefixes (mgp, mgm, mgl, mgs) to IDs
 #-------and break up vectors of IDs
-# if (cases under which we expect an ID) scrubIDs(, resource)
 
-#-------match to controlled-vocabulary
+	required.str <- paste(param[required.index], sep="/")
+	optional.str <- paste(names(param)[optional.index], param[optional.index], sep="=", collapse="&")
+}
+else {
+	required.str <- character(0)
+	optional.str <- character(0)
+}
 
-required.str <- paste (param[required], sep="/")
-optional.str <- paste(names(param)[optional], param[optional], sep="=", collapse="&")
-# cat("required string:  ", required.str, "\n")
-# cat("optional string:  ", optional.str,"\n")
-
+#-------construct the complete URL string
 path <- paste(server, resource, sep="/")
+#-------attach request name in the path
 if (length(request) > 0)
-#-------omit request names that the API (inconsistently) does not want: query, instance
-#-------omit "info" where it (inconsistently) fails to work: 
-#-------  'download','library','metagenome','profile','project','sample','status'
-	path <- paste(path, request, sep="/")
+#-------but omit request names that the API (inconsistently) does not want in the path
+	if (! resource %in% c("download","library","metagenome","project","sample"))
+#-------and omit "info" where it (inconsistently) fails to work: 
+		if (! (resource %in% c('download','library','metagenome','profile','project','sample','status')
+			&& request == "info"))
+				path <- paste(path, request, sep="/")
+#-------attach required parameters in the path
 if (length(required.str) > 0)
 	path <- paste(path, required.str, sep="/")
 call.url <- path
+#-------attach options
 if(length(optional.str) > 0)
 	call.url <- paste(call.url, optional.str, sep="?")
-	
+
 if(!issue) return(call.url)
 
-# REPLACE WITH IMPLEMENTATION VIA RCURL
-# DOWNLOAD NEEDS TESTING
-# PARSING NEEDS TESTING
-# CONFORMITY TEST NEEDS TESTING
+#-------ADD RCURL CODE for resources requiring a header
+# require(RCurl)
 
-require(RCurl)
-if(is.null(file)) x <- readLines(call.url, warn=FALSE)
-else x <- download.file(call.url, file, quiet=FALSE)
-
-if(!parse) return(x)
+#-------warn if a resource/request should be saved to file but is not
+if (is.null(file))
+	if((resource == "annotation" && request %in% c("sequence","similarity")) ||
+		(resource == "download" && request == "instance"))
+		warning("a file name should be specified for this request")
+if(!is.null(file)) {
+	download.file(call.url, file, quiet=!debug)
+	if (parse || verify)
+		warning("saved resource to file and ignored parse= or verify=TRUE")
+	return(file)
+}
+x <- readLines(call.url, warn=debug)
+if(!parse) return(invisible(x))
 
 require(RJSONIO)
-if (!isValidJSON(x, asText=TRUE)) warning("valid JSON not received")
+if (!isValidJSON(x, asText=TRUE)) warning("resource does not pass JSON validation")
 px <- fromJSON(x, asText=TRUE, simplify=TRUE)
-if(!verify) return(px)
+if(!verify) return(invisible(px))
 
+#-------CONFORMITY TEST needs buildout
 # if(!is.conforming(resource, request, px, quiet=TRUE)) stop("aborting due to non-conforming resource")
 
-px
+invisible(px)
 }
 
 

@@ -1,5 +1,5 @@
 
-general recommendations to repair broken API syntax
+(0) general recommendations to repair broken API syntax
 
 <request> is required in the path for <resource>="matrix" and others.  However:
 
@@ -26,21 +26,17 @@ for <resource> = 'download','library','metagenome','profile','project','sample',
 
 
 
+(1) "id" is required for compute/alphadiversity but not documented as such
+(2) redundant request names within m5nr resource
+    the m5nr resource doc object contains these requests:
+    info,ontology,taxonomy,sources,accession,alias,md5,function,organism,sequence,accession,alias,md5,function,organism,sequence 
+    one reads it and says: wha? 
+    if this is intentional, because requests with the same name are related ... 
+    well, it is confusing to have redundant names ESPECIALLY if they're related!
+    or are they just erroneous duplicates?
 
-
-# (1) "id" is required for compute/alphadiversity but not documented as such
-# (2) redundant request names within m5nr resource
-#     the m5nr resource doc object contains these requests:
-#     info,ontology,taxonomy,sources,accession,alias,md5,function,organism,sequence,accession,alias,md5,function,organism,sequence 
-#     one reads it and says: wha? 
-#     if this is intentional, because requests with the same name are related ... 
-#     well, it is confusing to have redundant names ESPECIALLY if they're related!
-#     or are they just erroneous duplicates?
-
-# (3) API calls work for validation resource that shouldn't
-#     these calls work (indeed they are the provided examples in doc object) yet "id" is 
-#     supposedly a required parameter (again according to the doc object):
-#         http://api.metagenomics.anl.gov/validation/template/
-#         http://api.metagenomics.anl.gov/validation/data/?template=
-
-validation <template> and validation <data> work without ID but it is a required param
+(3) API calls work for validation resource that shouldn't
+    these calls work (indeed they are the provided examples in doc object) yet "id" is 
+    supposedly a required parameter (again according to the doc object):
+        http://api.metagenomics.anl.gov/validation/template/
+        http://api.metagenomics.anl.gov/validation/data/?template=

@@ -1,8 +1,8 @@
-
 library(MGRASTer)
 
 ####################################################################################
-### test actual calls to the API 
+### test calls to the API 
+### as provided in the API documentation objects
 ####################################################################################
 
 issue <- FALSE

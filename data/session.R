@@ -83,6 +83,7 @@
 						function (req) names(.api[[res]][[req]]$parameters$options),
 						simplify=F),
 				simplify=F)
+#-------note: we only look for cvs among options, not required parameters
 			.cv <<- sapply(.resources, 
 				function (res) 
 					sapply (.requests[[res]],

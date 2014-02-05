@@ -1,3 +1,5 @@
+library(MGRASTer)
+
 ####################################################################################
 ### tests of parameter parsing
 ### --> don't issue calls here
@@ -6,7 +8,6 @@
 ### annotation compute download inbox library m5nr matrix metadata metagenome 
 ### profile project sample validation status
 ####################################################################################
-
 
 call.MGRAST("ann",issue=F)
 call.MGRAST("ann","seque",issue=F)
