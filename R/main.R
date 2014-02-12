@@ -32,12 +32,13 @@ call.MGRAST <- function (
 			status="info"),
 	..., 									# parameters
 	param = NULL, 		 					# parameters in a list (instead or additionally)
-	parse=TRUE, 							# parse JSON?
+	file=NULL,								# output to file
+	parse=is.null(file), 					# parse JSON?
 	verify=parse,  									# check retrieved object?
 	bugs=c("ignore","warn","stop","ask","report"),	# report bugs?
 	debug=FALSE,
-	issue=TRUE,										# issue the call?
-	file=NULL) {									# save to file
+	issue=TRUE							# issue the call?
+	) {									# save to file
 
 #-------just to save typing:
 server <- .MGRAST$server()
@@ -48,6 +49,7 @@ examples <- .MGRAST$examples()
 required <- .MGRAST$required()
 options <- .MGRAST$options()
 cv <- .MGRAST$cv()
+attributes <- .MGRAST$attributes()
 
 # ERRORS and BUGS
 # 
@@ -164,38 +166,16 @@ if (!isValidJSON(x, asText=TRUE)) warning("resource does not pass JSON validatio
 px <- fromJSON(x, asText=TRUE, simplify=TRUE)
 if(!verify) return(invisible(px))
 
-#-------CONFORMITY TEST needs buildout
-# if(!is.conforming(resource, request, px, quiet=TRUE)) stop("aborting due to non-conforming resource")
-
-invisible(px)
+#-------do not verify content for certain resources
+if (request %in% c("info") ||
+	resource %in% c("annotation","inbox","validation") ||
+	all (c(resource,request) == c("download","instance")))
+	warning("verify=TRUE for inapplicable resource")
+else {
+	diff <- setdiff (names (x), attributes [[resource]] [[request]])
+	if(length(diff) > 0)
+		warning("resource is missing component(s): ", paste(diff, collapse=" "))
 }
 
-
-is.conforming <- function (resource, request, object, quiet=FALSE) {
-
-### just to save typing:
-api <- .MGRAST$api()
-server <- .MGRAST$server()
-
-# validation currently is only by presence/absence of top-level fields.
-# more sophisticated validation would looke something like:
-# errstr <- "not enough columns"
-# warning(paste("non-conforming API resource received:",errstr))
-# stop("fatally non-conforming API resource received")
-
-check.content <- names(api[[resource]][[request]]$attributes) %in% names(object)
-missing.content <- names(api[[resource]][[request]]$attributes) [!check.content]
-
-# REFINE WITH A RECURSIVE CHECK FOR FIELDS WITHIN FIELDS
-if (all (check.content)) return(TRUE)
-
-# TWEAK: for approved exceptions, do not throw an error
-subtype <- paste(resource, request, "/")
-if (switch(subtype, 
-	"matrix/function" = identical(missing.content,"generated_by"),
-	"matrix/organism" = identical(missing.content,"date"),
-	default=FALSE)) return(TRUE)
-
-if (!quiet) warning("API resource of type ", subtype, " missing content: ", missing.content)
-return(FALSE)
+invisible(px)
 }

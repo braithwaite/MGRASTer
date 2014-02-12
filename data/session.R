@@ -54,6 +54,7 @@
 	.required <- NULL
 	.options <- NULL
 	.cv <- NULL
+	.attributes <- NULL
 
 	server <- function (s = NULL)
 		if (is.null(s)) .server
@@ -95,6 +96,13 @@
 								simplify=F),
 						simplify=F),
 				simplify=F)
+			.attributes <<- sapply(resources, 
+				function (res) 
+					sapply (requests[[res]],
+						function (req) 
+							names (api[[res]][[req]]$attributes),
+						simplify=F),
+				simplify=F)
 		}
 		.api
 		}
@@ -122,6 +130,10 @@
 		if (is.null (.cv)) api()
 		.cv
 		}
+	attributes <- function () {
+		if (is.null (.attributes)) api()
+		.attributes
+		}
 
 # try without names
 	list(server=server, 
@@ -131,6 +143,7 @@
 		examples=examples,
 		required=required,
 		options=options,
-		cv=cv)
+		cv=cv,
+		attributes=attributes)
 }) ()
 

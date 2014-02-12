@@ -1,5 +1,6 @@
 
-(0) general recommendations to repair broken API syntax
+(0) no clear rationale for when <request> belongs in path for API calls
+general recommendations to repair broken API syntax
 
 <request> is required in the path for <resource>="matrix" and others.  However:
 
@@ -25,8 +26,8 @@ That is aside from confusion caused by inconsistent syntax.  Related problems ex
 for <resource> = 'download','library','metagenome','profile','project','sample','status'
 
 
-
 (1) "id" is required for compute/alphadiversity but not documented as such
+
 (2) redundant request names within m5nr resource
     the m5nr resource doc object contains these requests:
     info,ontology,taxonomy,sources,accession,alias,md5,function,organism,sequence,accession,alias,md5,function,organism,sequence 

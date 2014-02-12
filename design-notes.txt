@@ -1,3 +1,4 @@
+
 # for debugging, call.MGRAST must be modular, have lots of parameters, or both.  modularity like this:
 
 all components in braces are indicated as "required" parameters within the request description:
@@ -73,4 +74,37 @@ function prototype: applies API exactly, with handling of communication issues a
 http://api.metagenomics.anl.gov/matrix/function
 http://api.metagenomics.anl.gov/sequence/...
 ...
+
+
+
+
+
+is.conforming <- function (resource, request, object, quiet=FALSE) {
+
+### just to save typing:
+api <- .MGRAST$api()
+server <- .MGRAST$server()
+
+# validation currently is only by presence/absence of top-level fields.
+# more sophisticated validation would looke something like:
+# errstr <- "not enough columns"
+# warning(paste("non-conforming API resource received:",errstr))
+# stop("fatally non-conforming API resource received")
+
+check.content <- names(api[[resource]][[request]]$attributes) %in% names(object)
+missing.content <- names(api[[resource]][[request]]$attributes) [!check.content]
+
+# REFINE WITH A RECURSIVE CHECK FOR FIELDS WITHIN FIELDS
+if (all (check.content)) return(TRUE)
+
+# TWEAK: for approved exceptions, do not throw an error
+subtype <- paste(resource, request, "/")
+if (switch(subtype, 
+	"matrix/function" = identical(missing.content,"generated_by"),
+	"matrix/organism" = identical(missing.content,"date"),
+	default=FALSE)) return(TRUE)
+
+if (!quiet) warning("API resource of type ", subtype, " missing content: ", missing.content)
+return(FALSE)
+}
 
