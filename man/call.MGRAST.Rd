@@ -73,8 +73,8 @@ call.MGRAST()
 call.MGRAST()
 
 ### save parsed JSON of same metadata (Rda format)
-call.MGRAST()
+# call.MGRAST()
 
 ### just return the URL without retrieving anything
-call.MGRAST(", issue=FALSE)
+# call.MGRAST(", issue=FALSE)
 }
