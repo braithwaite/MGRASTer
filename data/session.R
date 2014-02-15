@@ -96,11 +96,11 @@
 								simplify=F),
 						simplify=F),
 				simplify=F)
-			.attributes <<- sapply(resources, 
+			.attributes <<- sapply(.resources, 
 				function (res) 
-					sapply (requests[[res]],
+					sapply (.requests[[res]],
 						function (req) 
-							names (api[[res]][[req]]$attributes),
+							names (.api[[res]][[req]]$attributes),
 						simplify=F),
 				simplify=F)
 		}

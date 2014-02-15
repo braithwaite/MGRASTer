@@ -3,8 +3,8 @@
 
 \title{API Client for the MG-RAST Annotation Server}
 \description{
-A complete wrapper for the MG-RAST API.  Access to all API resources is made relatively
-convenient and natural to the R environment.  Export of MG-RAST data from the R session 
+A complete wrapper for the MG-RAST API.  Access to API resources is made
+convenient to the R environment.  Export of MG-RAST data from the R session 
 is facilitated.
 }
 \usage{
@@ -14,16 +14,16 @@ request = switch(match.arg(resource), annotation = "sequence", compute = "normal
 issue = TRUE)
 }
 \arguments{
-  \item{resource}{a single character string naming an API resource}
-  \item{request}{a single character string naming a request valid for the specified resource}
+  \item{resource}{string naming an API resource}
+  \item{request}{string naming a request valid for the specified resource}
   \item{\dots}{required and/or optional parameters to the API call}
-  \item{param}{required and/or optional parameters, in a list}
+  \item{param}{required and/or optional parameters (list)}
   \item{file}{name of a file to save the retrieved resource}
-  \item{parse}{boolean: attempt JSON parsing of result?}
-  \item{verify}{boolean: check integrity of the returned object?}
+  \item{parse}{attempt JSON parsing of result? (logical)}
+  \item{verify}{check integrity of the returned object? (logical)}
   \item{bugs}{reporting action for API-side problems}
-  \item{debug}{boolean: print debugging messages?}
-  \item{issue}{boolean: issue the call, or only return the constructed URL?}
+  \item{debug}{print debugging messages? (logical)}
+  \item{issue}{issue the call, or only return the constructed URL? (logical)}
 }
 \details{
 Each parameter included in "\ldots" and every element of "param" should be named.
@@ -47,9 +47,12 @@ Note that resources are returned invisible.
 }
 \author{Daniel T. Braithwaite}
 \examples{
+### note that resources returned by these calls will be invisible.
+### use print(<call>) to see them.
+
 ### list available analysis files for a metagenome
-print(call.MGRAST('download', 'setlist', 4447943.3)
-print(call.MGRAST('do', 'se', 4447943.3, stage=650)
+call.MGRAST('download', 'setlist', 4447943.3)
+call.MGRAST('do', 'se', 4447943.3, stage=650)
 
 ### save a specific stage of processing (into a file)
 call.MGRAST('do', 'ins', 4447943.3, fi=350.1, file="350.genecalling.coding.faa.gz")
@@ -76,5 +79,5 @@ call.MGRAST()
 # call.MGRAST()
 
 ### just return the URL without retrieving anything
-# call.MGRAST(", issue=FALSE)
+call.MGRAST(issue=FALSE)
 }
