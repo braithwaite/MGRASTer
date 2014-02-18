@@ -1,3 +1,9 @@
+##############################################################################
+### utility for rebuilding API structure for distribution
+##############################################################################
+
+### --------> add here
+
 
 ##############################################################################
 ### for the loading scheme, also see data/session.R
@@ -15,21 +21,7 @@
 
 call.MGRAST <- function (
 	resource = .MGRAST$resources(), 					# what resource
-	request = switch (match.arg (resource),				# what request
-			annotation="sequence", 				 #?
-			compute="normalize",   				 #?
-			download="instance",   				 #?
-			inbox="view",          				 #?
-			library="query",
-			m5nr="sources",
-			matrix="function",
-			metadata="template",
-			metagenome="query",
-			profile="info",
-			project="query",
-			sample="query",
-			validation="template",
-			status="info"),
+	request = .MGRAST$requests() [[match.arg(resource)]],	# what request
 	..., 									# parameters
 	param = NULL, 		 					# parameters in a list (instead or additionally)
 	file=NULL,								# output to file

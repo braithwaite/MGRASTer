@@ -1,6 +1,8 @@
 .my.name <- "MGRASTer"
 
+##############################################################################
 ### reads saved copy of API tree, upon package loading
+##############################################################################
 
 .read.API.tree <- function (fname = "API.Rda") {
 	fname <- file.path (path.package(.my.name), "extdata", fname)
@@ -8,10 +10,12 @@
 	api 	
 }
 
+##############################################################################
 ### retrieves and saves the API tree (for development purposes),
 ### or returns it (for dynamic update)
-
+###
 ### NOTE - WITH RENEW=TRUE SHOULD WRITE TO INSTALLATION?
+##############################################################################
 
 .build.API.tree <- function (save = FALSE, fname = "API.Rda") {
 	message(.my.name, ": rebuilding API resource tree")
@@ -29,11 +33,12 @@
 		names(api[[res]]) <- sapply(api[[res]], `[[`, "name")
 	}
 
-#-------FIX ERROR IN API DOCUMENTATION
+#-------FIXES ERROR IN API DOCUMENTATION
+#-------(no, not exactly; one is GET, one is POST, so it's not a mistake)
 #-------required "id" parameter undocumented in compute/alphadiversity
 	api$compute$alphadiversity$parameters$required <- api$annotation$sequence$parameters$required
 
-#-------FIX ERROR IN API DOCUMENTATION
+#-------FIXES ERROR IN API DOCUMENTATION
 #-------"m5nr" resource contains duplicates of requests
 	api$m5nr <- api$m5nr [1:10]
 
@@ -44,6 +49,9 @@
 	else api
 }
 
+##############################################################################
+### session API state information
+##############################################################################
 
 .MGRAST <- (function () {
 	.server <- "http://api.metagenomics.anl.gov"
@@ -135,7 +143,6 @@
 		.attributes
 		}
 
-# try without names
 	list(server=server, 
 		api=api, 
 		resources=resources, 
@@ -146,4 +153,3 @@
 		cv=cv,
 		attributes=attributes)
 }) ()
-

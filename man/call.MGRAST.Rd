@@ -1,52 +1,55 @@
 \name{call.MGRAST}
 \alias{call.MGRAST}
 
-\title{API Client for the MG-RAST Annotation Server}
-\description{
-A complete wrapper for the MG-RAST API.  Access to API resources is made
+\title{Wrapper Function for MG-RAST API}
+
+\description{A complete wrapper for the MG-RAST API.  Access to API resources is made
 convenient to the R environment.  Export of MG-RAST data from the R session 
-is facilitated.
-}
+is facilitated.}
+
 \usage{
-call.MGRAST(resource = .MGRAST$resources(), 
-request = switch(match.arg(resource), annotation = "sequence", compute = "normalize", download = "instance", inbox = "view", library = "query", m5nr = "sources", matrix = "function", metadata = "template", metagenome = "query", profile = "info", project = "query", sample = "query", validation = "template", status = "info"), 
-..., param = NULL, file = NULL, parse = is.null(file), verify = parse, bugs = c("ignore", "warn", "stop", "ask", "report"), debug = FALSE, 
-issue = TRUE)
+call.MGRAST(
+  resource=.MGRAST$resources(), 
+  request=.MGRAST$requests() [[match.arg(resource)]],
+  ..., param=NULL, file=NULL, parse=is.null(file), verify=parse, 
+  bugs=c("ignore", "warn", "stop", "ask", "report"), debug=FALSE, issue=TRUE)
 }
 \arguments{
-  \item{resource}{string naming an API resource}
-  \item{request}{string naming a request valid for the specified resource}
-  \item{\dots}{required and/or optional parameters to the API call}
+  \item{resource}{name of API resource (string)}
+  \item{request}{name of request, valid for the specified resource (string)}
+  \item{\dots}{required and/or optional parameters for the call}
   \item{param}{required and/or optional parameters (list)}
-  \item{file}{name of a file to save the retrieved resource}
+  \item{file}{file to save the retrieved resource (string)}
   \item{parse}{attempt JSON parsing of result? (logical)}
   \item{verify}{check integrity of the returned object? (logical)}
   \item{bugs}{reporting action for API-side problems}
   \item{debug}{print debugging messages? (logical)}
   \item{issue}{issue the call, or only return the constructed URL? (logical)}
 }
-\details{
-Each parameter included in "\ldots" and every element of "param" should be named.
+
+\details{Each parameter included in "\ldots" and every element of "param" should be named.
 However, unnamed parameters are taken as the call's required parameters, if any.
 All parameters will be coerced with "as.character".
 Parameters should be length-one.
 However, resource IDs of length greater than one are handled appropriately; see the examples.
-Partial parameter names and values are completed wherever possible.
-}
-\value{
-If "parse=TRUE" and the resource was successfully interpreted as JSON text, then a list mirroring the JSON structure.
+Partial parameter names and values are completed wherever possible.}
+
+\value{If "parse=TRUE" and the resource was successfully interpreted as JSON text, then a list mirroring the JSON structure.
 If "parse=FALSE", then the resource as read from the connection.
-The character string "file", if not "NULL" and the resource was successfully written there.
+The string "file", if it is not "NULL" and the resource was successfully written there.
 Only a URL for the specified resource, if "issue=FALSE".
-Note that resources are returned invisible.
-}
-\references{
-\url{http://metagenomics.anl.gov},
+Note that resources are returned invisible.}
+
+\references{\url{http://metagenomics.anl.gov},
 \url{http://api.metagenomics.anl.gov},
-\url{http://www.json.org}
-}
+\url{http://www.json.org}}
+
 \author{Daniel T. Braithwaite}
+
+
 \examples{
+### --------> COMPLETE THESE
+
 ### note that resources returned by these calls will be invisible.
 ### use print(<call>) to see them.
 

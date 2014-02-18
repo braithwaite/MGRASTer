@@ -1,12 +1,9 @@
 library(MGRASTer)
 
 ####################################################################################
-### tests of parameter parsing
-### --> don't issue calls here
-### --> make checks thorough
+### test parameter parsing; we don't issue calls here
 ###
-### annotation compute download inbox library m5nr matrix metadata metagenome 
-### profile project sample validation status
+### --------> this could use some expansion, for thoroughness
 ####################################################################################
 
 call.MGRAST("ann",issue=F)

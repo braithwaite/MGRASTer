@@ -1,8 +1,7 @@
 library(MGRASTer)
 
 ####################################################################################
-### test calls to the API 
-### as provided in the API documentation objects
+### test example API calls as documented by the API itself
 ####################################################################################
 
 issue <- FALSE
@@ -14,7 +13,13 @@ issue <- FALSE
 for (res in .MGRAST$resources()) call.MGRAST (res, 'info', issue=issue)
 
 ####################################################################################
-### test examples provided in API online docs
+### other examples
+###
+### note: these have been built by hand, a laborious and wasteful process.
+### it would obviously be better to extract them from the API docs, tokenize,
+### and construct calls to call.MGRAST() automatically.  however, there are
+### enough inconsistencies in API syntax to make that laborious, also, and
+### a low priority, for now.
 ####################################################################################
 
 ### http://api.metagenomics.anl.gov/annotation/sequence/mgm4447943.3?evalue=10&type=organism&source=SwissProt
@@ -91,9 +96,3 @@ call.MGRAST('va', 'te', issue=issue)
 ### http://api.metagenomics.anl.gov/validation/data/?template=
 call.MGRAST('va', 'da', issue=issue)
 
-
-# automate construction of the calls above, from the provided examples:
-# tokenize
-# match names/values (names sometimes missing)
-# identify as opt / required
-# identify param name
