@@ -15,6 +15,7 @@ distributed with the package, but it can also be rebuilt dynamically, with the m
 indicated below.}
 
 \examples{
+\dontrun{
 .MGRAST$server()
 str(.MGRAST$api())
 .MGRAST$resources()
@@ -25,7 +26,6 @@ str(.MGRAST$options())
 str(.MGRAST$cv())
 str(.MGRAST$attributes())
 
-\dontrun{
 .MGRAST$api(renew = TRUE)
 newAPIcopy <- .build.API.tree()
 .build.API.tree(save=TRUE, "API.Rda")

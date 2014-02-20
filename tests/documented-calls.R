@@ -41,7 +41,7 @@ call.MGRAST('li', 'qu', li=20, or='na', issue=issue)
 call.MGRAST('li', 'ins', 52924, ve='fu', issue=issue)
 
 ### http://api.metagenomics.anl.gov/m5nr/ontology?source=Subsystems&min_level=level3
-call.MGRAST('m5', 'on', so='Sub', mi='level3', issue=issue)
+call.MGRAST('m5', 'on', so='Subsystems', mi='level3', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/taxonomy?filter=Bacteroidetes&filter_level=phylum&min_level=genus
 call.MGRAST('m5', 'ta', filter='Bacteroidetes', filter_l='phylum', mi='genus', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/sources
@@ -51,13 +51,13 @@ call.MGRAST('m5', 'ac', 'YP_003268079.1', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/alias/IPR001478
 call.MGRAST('m5', 'al', 'IPR001478', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/md5/000821a2e2f63df1a3873e4b280002a8?source=InterPro
-call.MGRAST('m5', 'md', '000821a2e2f63df1a3873e4b280002a8', so='Int', issue=issue)
+call.MGRAST('m5', 'md', '000821a2e2f63df1a3873e4b280002a8', so='InterPro', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/function/sulfatase?source=GenBank
-call.MGRAST('m5', 'fu', 'sulfatase', so='Ge', issue=issue)
+call.MGRAST('m5', 'fu', 'sulfatase', so='GenBank', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/organism/akkermansia?source=KEGG
-call.MGRAST('m5', 'or', 'akkermansia', so='KE', issue=issue)
+call.MGRAST('m5', 'or', 'akkermansia', so='KEGG', issue=issue)
 ### http://api.metagenomics.anl.gov/m5nr/sequence/MAGENHQWQGSIL?source=TrEMBL
-call.MGRAST('m5', 'se', 'MAGENHQWQGSIL', so='Tr', issue=issue)
+call.MGRAST('m5', 'se', 'MAGENHQWQGSIL', so='TrEMBL', issue=issue)
 
 ### http://api.metagenomics.anl.gov/matrix/organism?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&group_level=family&source=RefSeq&result_type=abundance&evalue=15
 call.MGRAST('ma', 'or', id=c(4447943.3, 4447192.3, 4447102.3, 4447103.3), 
@@ -77,7 +77,7 @@ call.MGRAST('metadata', 'cv', issue=issue)
 call.MGRAST('metadata', 'ex', 128, issue=issue)
 
 ### http://api.metagenomics.anl.gov/metagenome?limit=20&order=name
-call.MGRAST('metageno','qu', li=20, ord='na', issue=issue)
+call.MGRAST('metageno','qu', li=20, ord='name', issue=issue)
 ### http://api.metagenomics.anl.gov/metagenome/mgm4447943.3?verbosity=metadata
 call.MGRAST('metageno','ins', 4447943.3, ve='me', issue=issue)
 

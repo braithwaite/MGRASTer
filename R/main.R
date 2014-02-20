@@ -2,7 +2,7 @@
 ### utility for rebuilding API structure for distribution
 ##############################################################################
 
-### --------> add here
+### --------> ADD HERE
 
 
 ##############################################################################
@@ -70,12 +70,15 @@ if (debug)
 #-------"param" remains "list" to accommodate vectors of IDs
 param <- append(list(...), param)
 if (length (param) > 0) {
+	param <- sapply (param, as.character)
+
 #-------use names of required parameters for unnamed parameters (typically "id" or "text")
 	if (is.null(names(param)))
 		is.na(names(param)) <- TRUE
 	j <- is.na(names(param)) | (names(param) == "")
 	if (any (j)) 
 		names(param)[j] <- required[[resource]][[request]]
+
 #-------now in the list all parameters have a (possibly abbreviated) name; match them
 	targets <- union(required[[resource]][[request]], options[[resource]][[request]])
 	x <- targets [pmatch(names(param), targets, duplicates.ok=TRUE)]
@@ -84,6 +87,20 @@ if (length (param) > 0) {
 	names(param) <- x
 	if (debug)
 		cat(paste(names(param),"=",param,collapse=" ",sep=""), "\n")
+
+#-------handle param(s) named "id" specially, by breaking apart vectors and add prefixes
+	if("id" %in% names(param)) {
+		ids <- param [names(param) == "id"]
+		prefix <- switch (resource,
+			annotation=,compute=,download=,matrix=,metagenome="metagenome",
+			library=,project=,sample=resource,default=NULL)
+		if (!is.null (prefix)) {
+			ids <- as.vector (sapply(ids, scrubIDs, prefix))
+			is.na(names(ids)) <- TRUE
+			names(ids)[] <- "id"
+			param <- append (param [names(param) != "id"], ids)
+		}
+	}
 
 #-------check required parameters present
 	required.index <- names(param) %in% required[[resource]][[request]]
@@ -104,9 +121,6 @@ if (length (param) > 0) {
 				param[[j]] <- x
 			}
 		}
-
-#-------add prefixes (mgp, mgm, mgl, mgs) to IDs
-#-------and break up vectors of IDs
 
 	required.str <- paste(param[required.index], sep="/")
 	optional.str <- paste(names(param)[optional.index], param[optional.index], sep="=", collapse="&")
@@ -147,7 +161,7 @@ if (is.null(file))
 if(!is.null(file)) {
 	download.file(call.url, file, quiet=!debug)
 	if (parse || verify)
-		warning("saved resource to file and ignored parse= or verify=TRUE")
+		message("saved resource to file and ignored parse= or verify=TRUE")
 	return(file)
 }
 x <- readLines(call.url, warn=debug)
@@ -162,7 +176,7 @@ if(!verify) return(invisible(px))
 if (request %in% c("info") ||
 	resource %in% c("annotation","inbox","validation") ||
 	all (c(resource,request) == c("download","instance")))
-	warning("verify=TRUE for inapplicable resource")
+	message("ignoring verify=TRUE for inapplicable resource")
 else {
 	diff <- setdiff (names (x), attributes [[resource]] [[request]])
 	if(length(diff) > 0)
@@ -170,4 +184,21 @@ else {
 }
 
 invisible(px)
+}
+
+
+##############################################################################
+### chrome-plated ID scrubbing
+##############################################################################
+
+scrubIDs <- function (IDs, resources = "metagenome") {
+	IDs <- unlist (sapply (as.list (IDs), strsplit, "[^[:alnum:]\\.]+"))
+	names <- names (IDs)
+	prefixes <- rep (resources, length.out = length (IDs))
+	prefixes <- match.arg (prefixes, c ("metagenome", "project", "sample", "library"), TRUE)
+	lookup <- c (metagenome="mgm", project="mgp", sample="mgs", library="mgl")
+	scrubbed <- paste (ifelse (substr(IDs, 1, 3) %in% lookup, "", lookup[prefixes]), 
+		IDs, sep = "")
+	names (scrubbed) <- names (IDs)
+	scrubbed
 }

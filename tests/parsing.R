@@ -31,3 +31,8 @@ call.MGRAST("mat", "func", filter="a",issue=F)
 # not ok (no match in CV):
 call.MGRAST("mat", "func", filter="a",filter_="b",issue=F)
 call.MGRAST("mat", "func", filter="a",filter_l="b",filter_s="c",issue=F)
+
+
+# prefix <- "met"
+# ids <- list(id=c("12.3", "40.2"), id="55.4 60.3")
+# sapply(ids, scrubIDs, prefix)

@@ -48,6 +48,7 @@ Note that resources are returned invisible.}
 
 
 \examples{
+\dontrun{
 ### --------> COMPLETE THESE
 
 ### note that resources returned by these calls will be invisible.
@@ -83,4 +84,5 @@ call.MGRAST()
 
 ### just return the URL without retrieving anything
 call.MGRAST(issue=FALSE)
+}
 }

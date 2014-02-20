@@ -7,3 +7,6 @@ library(MGRASTer)
 issue <- FALSE
 
 ### --------> ADD HERE
+
+### stress test ID parsing esp
+### show variations; use in R paradigm
