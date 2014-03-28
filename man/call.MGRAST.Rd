@@ -12,7 +12,8 @@ call.MGRAST(
   resource=.MGRAST$resources(), 
   request=.MGRAST$requests() [[match.arg(resource)]],
   ..., param=NULL, file=NULL, parse=is.null(file), verify=parse, 
-  bugs=c("ignore", "warn", "stop", "ask", "report"), debug=FALSE, issue=TRUE)
+  bugs=c("ignore", "warn", "stop", "ask", "report"), debug=FALSE, 
+  timeout=300, issue=TRUE)
 }
 \arguments{
   \item{resource}{name of API resource (string)}
@@ -24,6 +25,7 @@ call.MGRAST(
   \item{verify}{check integrity of the returned object? (logical)}
   \item{bugs}{reporting action for API-side problems}
   \item{debug}{print debugging messages? (logical)}
+  \item{timeout}{number of seconds to allow for the call}
   \item{issue}{issue the call, or only return the constructed URL? (logical)}
 }
 

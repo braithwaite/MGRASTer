@@ -12,7 +12,7 @@
 .onLoad <- function (libname, pkgname) { }
 
 .onAttach <- function (libname, pkgname) { 
-	packageStartupMessage(pkgname, " (", packageVersion(pkgname), " build XXXXXXX)")
+	packageStartupMessage(pkgname, " (", packageVersion(pkgname), " build xxxxxxx)")
 }
 
 ##############################################################################
@@ -29,6 +29,7 @@ call.MGRAST <- function (
 	verify=parse,  									# check retrieved object?
 	bugs=c("ignore","warn","stop","ask","report"),	# report bugs?
 	debug=FALSE,
+	timeout=300,						# timeout for download
 	issue=TRUE							# issue the call?
 	) {									# save to file
 
@@ -61,9 +62,10 @@ attributes <- .MGRAST$attributes()
 resource <- match.arg(resource)
 request <- match.arg(request, requests[[resource]])
 if (debug)
-	cat(resource, "|", request, " ::: ",
-		paste(required[[resource]][[request]], collapse=" "), " ::: ",
-		paste(options[[resource]][[request]], collapse=" "), "\n", sep="")
+	message(resource, " :: ",
+		request, " :: ",
+		paste(required[[resource]][[request]], collapse=" "), " :: ",
+		paste(options[[resource]][[request]], collapse=" "))
 
 #-------combine parameters from "..." and "param"
 #-------and convert numbers (such as IDs) to strings
@@ -85,8 +87,6 @@ if (length (param) > 0) {
 	if (any(is.na(x)))
 		warning("no match (or not unique) for parameter(s): ", paste(names(param)[is.na(x)], collapse=" "))
 	names(param) <- x
-	if (debug)
-		cat(paste(names(param),"=",param,collapse=" ",sep=""), "\n")
 
 #-------handle param(s) named "id" specially, by breaking apart vectors and add prefixes
 	if("id" %in% names(param)) {
@@ -102,6 +102,9 @@ if (length (param) > 0) {
 		}
 	}
 
+	if (debug)
+		message(paste(names(param), "=", param, collapse=" ",sep=""))
+
 #-------check required parameters present
 	required.index <- names(param) %in% required[[resource]][[request]]
 	optional.index <- names(param) %in% options[[resource]][[request]]
@@ -110,7 +113,7 @@ if (length (param) > 0) {
 		warning("required parameter(s) missing: ", 
 				required[[resource]] [[request]] [!check.required])
 
-#-------match to controlled vocabularies
+#-------match parameter values to controlled vocabularies
 	for (j in 1:length(param))
 		if (optional.index[j]) {
 			vocab <- cv[[resource]] [[request]] [[names(param)[j]]]
@@ -157,14 +160,20 @@ if(!issue) return(call.url)
 if (is.null(file))
 	if((resource == "annotation" && request %in% c("sequence","similarity")) ||
 		(resource == "download" && request == "instance"))
-		warning("a file name should be specified for this request")
+		stop("a file name should be specified for this request")
+
+timeout.old <- getOption("timeout")
+options(timeout=timeout)
 if(!is.null(file)) {
 	download.file(call.url, file, quiet=!debug)
 	if (parse || verify)
 		message("saved resource to file and ignored parse= or verify=TRUE")
+	options(timeout=timeout.old)
 	return(file)
 }
 x <- readLines(call.url, warn=debug)
+options(timeout=timeout.old)
+
 if(!parse) return(invisible(x))
 
 require(RJSONIO)
@@ -183,7 +192,8 @@ else {
 		warning("resource is missing component(s): ", paste(diff, collapse=" "))
 }
 
-invisible(px)
+if (debug) px
+else invisible(px)
 }
 
 
