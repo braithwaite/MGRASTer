@@ -1,10 +1,11 @@
+####################################################################################
+### test parsing of arguments.  no calls are issued from here.
+####################################################################################
+
 library(MGRASTer)
 
-####################################################################################
-### test parameter parsing; we don't issue calls here
-###
 ### --------> this could use some expansion, for thoroughness
-####################################################################################
+
 
 call.MGRAST("ann",issue=F)
 call.MGRAST("ann","seque",issue=F)

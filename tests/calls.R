@@ -1,28 +1,50 @@
+####################################################################################
+### test calls to MG-RAST.
+####################################################################################
+
 library(MGRASTer)
+issue <- FALSE
+ff <- tempfile()
 
 ####################################################################################
-### test example API calls as documented by the API itself
+### test calls directly from API documentation
 ####################################################################################
 
-issue <- TRUE
-tf <- tempfile()
+examples <- lapply(get("API", .MGRAST), lapply, `[[`, "example")
+examples <- unname(unlist(examples))
+examples <- examples [substr(examples, 1, 7) == "http://"]
+
+for (xx in examples) {
+	message("Example URL: ", xx)
+	zz <- MGRAST.args(xx)
+	message("Applying call.MGRAST() with arguments: ")
+	print(zz)
+	zz$issue <- issue
+	zz$debug <- TRUE
+	if(is.filebased(zz$resource, zz$request))
+		zz$file <- ff
+	do.call(call.MGRAST, zz)
+	message("Done.\n")
+	}
 
 ####################################################################################
 ### test info pages
 ####################################################################################
 
-#------->THESE DON'T WORK; WHY NOT?
-# for (res in .MGRAST$resources()) call.MGRAST (res, 'info', debug=TRUE, issue=issue)
+for (xx in names(get("API", .MGRAST))) {
+	message("Making info call for resource: ", xx)
+	call.MGRAST(xx, 'info', debug=TRUE, issue=issue)
+	message("Done.\n")
+}
 
 ####################################################################################
-### other examples
-###
-### note: these have been built by hand, a laborious and wasteful process.
-### it would obviously be better to extract them from the API docs, tokenize,
-### and construct calls to call.MGRAST() automatically.  however, there are
-### enough inconsistencies in API syntax to make that laborious, also, and
-### a low priority, for now.
+### other
 ####################################################################################
+
+### --------> ADD HERE
+### show variations
+### stress test ID parsing esp
+### use in R paradigm
 
 ### http://api.metagenomics.anl.gov/annotation/sequence/mgm4447943.3?evalue=10&type=organism&source=SwissProt
 call.MGRAST('an', 'se', 4447943.3, ev=10, ty='or', so='Sw', file=tf, debug=TRUE, issue=issue)

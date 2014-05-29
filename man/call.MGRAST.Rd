@@ -1,5 +1,6 @@
 \name{call.MGRAST}
 \alias{call.MGRAST}
+\alias{MGRAST.args}
 
 \title{Wrapper Function for MG-RAST API}
 
@@ -14,6 +15,7 @@ call.MGRAST(
   ..., param=NULL, file=NULL, parse=is.null(file), verify=parse, 
   bugs=c("ignore", "warn", "stop", "ask", "report"), debug=FALSE, 
   timeout=300, issue=TRUE)
+MGRAST.args(call.url)
 }
 \arguments{
   \item{resource}{name of API resource (string)}
@@ -27,6 +29,7 @@ call.MGRAST(
   \item{debug}{print debugging messages? (logical)}
   \item{timeout}{number of seconds to allow for the call}
   \item{issue}{issue the call, or only return the constructed URL? (logical)}
+  \item{call.url}{... (string)}
 }
 
 \details{Each parameter included in "\ldots" and every element of "param" should be named.

@@ -1,8 +1,7 @@
 \name{.MGRAST}
 \alias{.MGRAST}
-\alias{.build.API.tree}
-\alias{.my.name}
-\alias{.read.API.tree}
+\alias{loadAPI}
+\alias{rebuildAPI}
 \docType{data}
 
 \title{State Information for MG-RAST API}
@@ -16,18 +15,8 @@ indicated below.}
 
 \examples{
 \dontrun{
-.MGRAST$server()
-str(.MGRAST$api())
-.MGRAST$resources()
-.MGRAST$requests()
-.MGRAST$examples()
-str(.MGRAST$required())
-str(.MGRAST$options())
-str(.MGRAST$cv())
-str(.MGRAST$attributes())
-
-.MGRAST$api(renew = TRUE)
-newAPIcopy <- .build.API.tree()
-.build.API.tree(save=TRUE, "API.Rda")
+.MGRAST$api$matrix$organism
+rebuildAPI("APIcopy.Rda")
+API <- loadAPI("APIcopy.Rda")
 }}
 \keyword{datasets}

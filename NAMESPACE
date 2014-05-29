@@ -1,4 +1,9 @@
 # export everything (in development mode)
+# exportPattern(*.*)
 
-exportPattern(".*")
-
+export(
+	call.MGRAST,
+	parse.MGRAST,
+	is.filebased,
+	loadAPI,
+	rebuildAPI)

@@ -1,20 +1,19 @@
 Package: MGRASTer
 Type: Package
-Title: Simple Client for the MG-RAST Server
-Version: 0.1.0
+Title: API Client for the KBase MG-RAST Server
+Version: 0.5.0
 Depends: R (>= 3.0), utils, RJSONIO
 Imports: 
-Suggests:
+Suggests: matR, BIOM.utils
 URL: https://github.com/braithwaite/MGRASTer/
 Date: 2014-02-01
 Author: Daniel T. Braithwaite
 Maintainer: Daniel T. Braithwaite <braithwaite@cels.anl.gov>
 Authors@R: c(person ("Daniel", "Braithwaite", role = c ("aut", "cre"), email = "braithwaite@uchicago.edu"))
-Description: Simple Client for the MG-RAST Server
+Description: Convenience Functions for R Language Access to the API of the MG-RAST Metagenome Annotation Server, part of the US Department of Energy (DOE) Systems Biology Knowledge Base (KBase).
 License: file LICENSE
 LazyLoad: yes
 LazyData: yes
 LazyDataCompression: xz
 BuildVignettes: no
-Collate: main.R
-
+Collate: source.R
