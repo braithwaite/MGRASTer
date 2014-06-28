@@ -1,60 +1,90 @@
 \name{call.MGRAST}
 \alias{call.MGRAST}
-\alias{MGRAST.args}
+\alias{parse.MGRAST}
 
-\title{Wrapper Function for MG-RAST API}
+\title{
+Interface to MG-RAST API
+}
 
-\description{A complete wrapper for the MG-RAST API.  Access to API resources is made
-convenient to the R environment.  Export of MG-RAST data from the R session 
-is facilitated.}
+\description{
+An interface to the MG-RAST API enabling convenient access in the R
+environment to provided resources, as well as facilitating export.
+}
 
 \usage{
-call.MGRAST(
-  resource=.MGRAST$resources(), 
-  request=.MGRAST$requests() [[match.arg(resource)]],
-  ..., param=NULL, file=NULL, parse=is.null(file), verify=parse, 
-  bugs=c("ignore", "warn", "stop", "ask", "report"), debug=FALSE, 
-  timeout=300, issue=TRUE)
-MGRAST.args(call.url)
+call.MGRAST(resource, request, ..., param=NULL, file=NULL, parse=is.null(file), verify=parse, 
+  bugs=c("ignore", "warn", "stop", "ask", "report"), quiet=TRUE, timeout=300, issue=TRUE)
+parse.MGRAST(call.url)
 }
 \arguments{
   \item{resource}{name of API resource (string)}
   \item{request}{name of request, valid for the specified resource (string)}
   \item{\dots}{required and/or optional parameters for the call}
-  \item{param}{required and/or optional parameters (list)}
+  \item{param}{further parameters ("list")}
   \item{file}{file to save the retrieved resource (string)}
-  \item{parse}{attempt JSON parsing of result? (logical)}
-  \item{verify}{check integrity of the returned object? (logical)}
-  \item{bugs}{reporting action for API-side problems}
-  \item{debug}{print debugging messages? (logical)}
+  \item{parse}{attempt JSON parsing of result? ("logical")}
+  \item{verify}{check integrity of the returned object? ("logical")}
+  \item{bugs}{reporting action for API-side problems -- not used}
+  \item{quiet}{print debugging messages? ("logical")}
   \item{timeout}{number of seconds to allow for the call}
-  \item{issue}{issue the call, or only return the constructed URL? (logical)}
-  \item{call.url}{... (string)}
+  \item{issue}{issue the call, or only return the constructed URL? ("logical")}
+  \item{call.url}{URL for an API resource (string)}
 }
 
-\details{Each parameter included in "\ldots" and every element of "param" should be named.
-However, unnamed parameters are taken as the call's required parameters, if any.
-All parameters will be coerced with "as.character".
-Parameters should be length-one.
-However, resource IDs of length greater than one are handled appropriately; see the examples.
-Partial parameter names and values are completed wherever possible.}
+\details{
+This documentation assumes familiarity with the MG-RAST API, which is described elsewhere.
 
-\value{If "parse=TRUE" and the resource was successfully interpreted as JSON text, then a list mirroring the JSON structure.
-If "parse=FALSE", then the resource as read from the connection.
-The string "file", if it is not "NULL" and the resource was successfully written there.
-Only a URL for the specified resource, if "issue=FALSE".
-Note that resources are returned invisible.}
+"resource" and "request" are required for all API calls.  Optional and required parameters may be 
+given in "\ldots" and must be named.  In general, parameters should be length-one "character" vectors.  At any rate, they may be coerced by
+"as.character".  Parameters may also be given with "param", which must be a named
+list.  Partial "resource", "request", and parameter names are matched wherever possible, as are
+partial parameter values tied to a controlled vocabulary.
 
-\references{\url{http://metagenomics.anl.gov},
-\url{http://api.metagenomics.anl.gov},
-\url{http://www.json.org}}
+The "id" parameter is specially handled with some helpful scrubbing.  In particular, prefixes
+"mgl", "mgm", "mgp", and "mgs" are added as necessary, and multiple "id"s given in a vector are
+separated.
 
-\author{Daniel T. Braithwaite}
+For certain resource-request pairs, "file" is mandatory.  For all others, it is optional.
+When "verify" is "TRUE" a check is made that all documented components for a resource-request
+are actually received.
 
+Setting "quiet" to "FALSE" can help shed light on unexpected results.
+
+"parse.MGRAST" tokenizes a valid API URL.  If "x" is a URL validly requesting an API resource, 
+then "do.call (call.MGRAST, parse.MGRAST (x))" will retrieve that resource.
+}
+
+\value{
+For "call.MGRAST", a "list" mirroring the JSON structure of the received resource (invisibly).
+But if "parse" is "FALSE", then the resource, uninterpreted.
+For non-JSON resources, "parse" is ignored.
+
+But if "file" is not "NULL" and the resource was successfully written there, then "file".
+(If parse is "TRUE" and relevant, the file is written in .rda format, otherwise raw (usually meaning, 
+as legible text.)  Only a URL for the specified resource, if "issue" is "FALSE".
+
+For "parse.MGRAST", a named "list" including "resource", "request", and further parameters for the 
+indicated API call.
+}
+
+\seealso{
+"\link{doc.MGRAST}", 
+"\link{MGRASTAPI}"
+}
+
+\author{
+Daniel T. Braithwaite
+}
+
+\references{
+\url{http://metagenomics.anl.gov} \cr
+\url{http://api.metagenomics.anl.gov} \cr
+\url{http://www.json.org}
+}
 
 \examples{
 \dontrun{
-### --------> COMPLETE THESE
+### --------> COMPLETE THESE ---- as prov
 
 ### note that resources returned by these calls will be invisible.
 ### use print(<call>) to see them.
