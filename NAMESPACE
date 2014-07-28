@@ -3,4 +3,4 @@ export(
 	parse.MGRAST,
 	doc.MGRAST,
 	load.MGRAST,
-	rebuild.MGRAST)
+	build.MGRAST)

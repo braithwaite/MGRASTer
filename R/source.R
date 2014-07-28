@@ -1,23 +1,23 @@
 ###############################################################################
-##
-##  Goals of this package:
-##
-##  (1) make the MGRAST API accessible within R
-##  (2) do it with respect to R paradigms
-##  (3) hide API inconsistencies from the user wherever possible
-##
-##  This package carries its single "data" object, namely the MGRAST API doc
-##  tree, in a slightly odd way.  The doc tree is a list ("API") saved as .rda, 
-##  not in /data but in /extdata.  In a formal sense, the data of the package
-##  is an environment (.MGRAST) created by a source code data file in /data.
-##  The doc tree is stored into that environment upon package loading.
-##
-##  The purpose of this rigamarole is to allow dynamic update, in any installation
-##  of MGRASTer, of the API tree.  It cannot be updated permanently without an
-##  update to the package installation, but it can be updated in each session.
-##  This is an important ability for our working environment:  time-sensitive
-##  API patches often need to be accessible immediately.
-##
+#
+#  Goals of this package:
+#
+#  (1) make the MGRAST API accessible within R
+#  (2) do it with respect to R paradigms
+#  (3) hide API inconsistencies from the user wherever possible
+#
+#  This package carries its single "data" object, namely the MGRAST API doc
+#  tree, in a slightly odd way.  The doc tree is a list ("API") saved as .rda, 
+#  not in /data but in /extdata.  In a formal sense, the data of the package
+#  is an environment (.MGRAST) created by a source code data file in /data.
+#  The doc tree is stored into that environment upon package loading.
+#
+#  The purpose of this rigamarole is to allow dynamic update, in any installation
+#  of MGRASTer, of the API tree.  It cannot be updated permanently without an
+#  update to the package installation, but it can be updated in each session.
+#  This is an important ability for our working environment:  time-sensitive
+#  API patches often need to be accessible immediately.
+#
 ###############################################################################
 
 
@@ -50,7 +50,7 @@ doc.MGRAST <- function (depth = 1, stratum = NULL, head = NULL, ...) {
 #------------------------------------------------------------------------------
 
 load.MGRAST <- function (ff = API.file()) {
-	if (length (ff)) {
+	if (!is.null (ff)) {
 		load (ff)
 		if ("API" %in% ls()) return (invisible (API))
 		else stop ("object \"API\" not found in ", ff)
@@ -65,36 +65,38 @@ load.MGRAST <- function (ff = API.file()) {
 #  does not reload into .MGRAST
 #------------------------------------------------------------------------------
 
-rebuild.MGRAST <- function (ff = API.filename) {
+build.MGRAST <- function (ff = API.filename) {
 	library (RJSONIO)
-	if (length (ff))
-		message ("rebuilding object \"API\" in ", ff, " in ", getwd())
 
+#------------------------------------------------------------------------------
+#  make list of resources.
+#  add undocumented resource "status"
+#------------------------------------------------------------------------------
 	server.path <- get ("server", .MGRAST)
 	resource.page <- fromJSON (readLines(server.path, warn=FALSE), asText=TRUE, simplify=TRUE)
 	resources <- unname (sapply (resource.page$resources, `[`, "name"))
 	resources <- c (resources, "status")
+
+#------------------------------------------------------------------------------
+#  download info page for each into the list
+#------------------------------------------------------------------------------
 	API <- list()
 	for (rr in resources) {
 		rr.url <- paste (server.path, rr, sep="/")
 		request.page <- fromJSON (readLines (rr.url, warn = FALSE), asText = TRUE, simplify = TRUE)
 		API [[rr]] <- request.page$requests
-		names (API [[rr]]) <- sapply (API[[res]], `[[`, "name")
+		names (API [[rr]]) <- sapply (API[[rr]], `[[`, "name")
 	}
 
 #------------------------------------------------------------------------------
-#  add undocumented but required "id" parameter in compute/alphadiversity (no, not exactly; one is GET, one is POST, so it's not a mistake)
+#  remove "POST" resources since we don't handle them.
+#  also some of them are identically named with GET resources, which is crazy.
 #------------------------------------------------------------------------------
-	API$compute$alphadiversity$parameters$required <- API$annotation$sequence$parameters$required
-
-#------------------------------------------------------------------------------
-#  remove duplicate requests in  "m5nr" resource
-#------------------------------------------------------------------------------
-	API$m5nr <- API$m5nr [1:10]
+	API <- mapply (`[`, API, lapply (API, function (xx) sapply (xx, `[[`, "method") == "GET"))
 
 	if (length (ff)) {
 		save (API, file=ff)
-		message ("Done.  Move to ", file.path (this.package(), "inst", "extdata"))
+		message ("Wrote object \"API\" to ", ff, " in ", getwd(), "\nMove to ", file.path (this.package(), "inst", "extdata"))
 		ff
 		}
 	else invisible(API)
@@ -106,59 +108,74 @@ rebuild.MGRAST <- function (ff = API.filename) {
 #  will fetch the intended resource.
 #  this is just a question of tokenizing and tending to a few API inconsistencies.
 #
-#  regexec is trying to identify these parts:
-#  1: "http://"
-#  2: (server)
-#  3: (request/resource/required parameters)
-#  4:  "?"
-#  5:  (optional parameters)
+#  regexp is matching:
+#    (req) literal "http://" or "https://"
+#    (req) server name as "anything up to /"
+#    (opt) version number as "/ plus digits, decimal points"
+# 1: (opt) path ("required") parameters as "/ plus anything up to ?"
+#    (opt) literal "?"
+# 2: (opt) optional parameters, as all remaining characters
 #
-#  index [-1] drops the first match, to the entire URL
-#  and then appears again, to drop the empty split component before the first "/"
+#  index [-c(1,2)] drops unneeded parts of the match
 #------------------------------------------------------------------------------
 
 parse.MGRAST <- function (call.url) {
 	api <- get ("API", .MGRAST)
-	xx <- regmatches (
-		call.url,
-		regexec("(http://)([\\.[:alnum:]]+)([/\\.[:alnum:]]+)(\\??)([[:print:]]*)",
-			call.url)) [[1]] [-1]
+	xx <- regmatches (call.url,
+		regexec("https?://[^/]+(/[[:digit:]\\.]+)?(/[^\\?]*)?\\??(.*)", call.url)) [[1]] [-c(1,2)]
 
-	yy <- strsplit (xx[5], "&") [[1]]
+#------------------------------------------------------------------------------
+#  determine optional parameters
+#  possibly this comes out length 0
+#------------------------------------------------------------------------------
+	yy <- strsplit (xx[2], "&") [[1]]
 	zz <- strsplit (yy, "=")
 	optional <- sapply (zz, `[`, 2)
 	names(optional) <- sapply (zz, `[`, 1)
 
-	path <- strsplit (xx[3], "/") [[1]] [-1]
+#------------------------------------------------------------------------------
+#  determine resource
+#  this is the consistent part of API syntax
+#  index [-1] drops the empty split component before the first "/"
+#------------------------------------------------------------------------------
+	path <- strsplit (xx[1], "/") [[1]] [-1]
 	resource <- path[1]
-	if (length (path) == 1) {
+
 #------------------------------------------------------------------------------
-#  one path component:  easy
+#  determine the request ...
+#  use the name of a request, if one is given;
+#  or else, consider only requests for which:
+#    all provided optional parameters are valid, and
+#    parameter(s) are both required and provided in the path, or the reverse
+#  and store any provided path (required) parameters, along the way
 #------------------------------------------------------------------------------
-		request <- "info"
-		required <- NULL
-	} else if (path[2] %in% names (api [[resource]])) {
-#------------------------------------------------------------------------------
-#  request explicitly named: easy
-#------------------------------------------------------------------------------
-		request <- path[2]
+	couldbe <- rep (FALSE, length (api [[resource]]))
+	names (couldbe) <- names (api [[resource]])
+	if (path [2] %in% names (api [[resource]])) {
+		couldbe [path [2]] <- TRUE
 		required <- path [-c(1,2)]
-		if (length (required))
-			names(required) <- names (api [[resource]] [[request]] $ parameters $ required)
 	} else {
-#------------------------------------------------------------------------------
-#  otherwise:  what request is meant??  murky.
-#  for instance, "download" requests are distinguish by options!
-#------------------------------------------------------------------------------
-		for (request in names (api [[resource]])) if (
-			length (api [[resource]] [[request]] $ parameters $ required) &&
-			!length (setdiff (
-					names (optional),
-					names (api [[resource]] [[request]] $ parameters $ options))))
-				break
+		for (request in names (couldbe))
+			couldbe [request] <-
+				!length (setdiff (
+						names (optional),
+						names (api [[ c(resource,request) ]] $ parameters $ options))) &&
+				(length (path) > 1) ==
+				as.logical (length (api [[ c(resource,request) ]] $ parameters $ required))
 		required <- path [-1]
-		names(required) <- names (api [[resource]] [[request]] $ parameters $ required)
 		}
+#------------------------------------------------------------------------------
+#  if that didn't make a unique determination,
+#  the next line produces an error or arbitrary choice.
+#  in other words:  we give up on it.
+#------------------------------------------------------------------------------
+	request <- names (couldbe) [which (couldbe) [1]]
+
+#------------------------------------------------------------------------------
+#  if there are required parameters, make an effort to give them names
+#------------------------------------------------------------------------------
+	if (length (required))
+		names(required) <- names (api [[ c(resource,request) ]] $ parameters $ required)
 
 	c (list(resource=resource, request=request), as.list (required), as.list (optional))
 	}
@@ -177,14 +194,14 @@ call.MGRAST <- function (
 	request,								# what request
 	..., 									# parameters
 	args=NULL, 		 					# parameters in a list (instead or additionally)
-	file=NULL,								# output to file
-	parse=is.null(file), 					# parse JSON?
+	destfile=NULL,							# output to file
+	parse=is.null(destfile), 					# parse JSON?
 	verify=parse,  									# check retrieved object?
 	bugs=c("ignore","warn","stop","ask","report"),	# report bugs?
 	quiet=TRUE,
 	timeout=300,						# timeout for download
 	issue=TRUE							# issue the call?
-	) {									# save to file
+	) {
 
 	checkpoint <- if (!quiet) message else function(...) { }
 	api.root <- get("API", .MGRAST)
@@ -194,12 +211,12 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 	resource <- match.arg (resource, names (api.root))
 	request <- match.arg (request, names (api.root [[resource]]))
-	checkpoint('resource: ', resource, '\nrequest: ', request)
+	checkpoint ('resource: ', resource, '\nrequest: ', request)
 
 #------------------------------------------------------------------------------
 #  warn if file name should be provided but is not
 #------------------------------------------------------------------------------
-	if (is.null(file) &&
+	if (is.null (destfile) &&
 		((resource == "annotation" && request %in% c("sequence", "similarity")) ||
 		(resource == "download" && request == "instance")))
 		stop ("an output file should be specified for this request")
@@ -207,9 +224,9 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 #  identify required and optional parameters
 #------------------------------------------------------------------------------
-	api <- api.root [[ c(resource, request, "parameters") ]]
-	required <- names (api [["required"]])
-	optional <- names (api [["options"]])
+	api <- api.root [[ c(resource, request) ]] $ parameters
+	required <- names (api$required)
+	optional <- names (api$options)
 	checkpoint(
 		"required parameters: ", collapse(required), 
 		"\noptional parameters: ", collapse(optional))
@@ -217,16 +234,26 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 #  make table of relevant controlled vocabularies
 #------------------------------------------------------------------------------
-	type <- sapply (api [["options"]], `[[`, 1)
-	cv2 <- lapply (api [["options"]] [type == "cv"], `[[`, 2)
-	cv <- sapply (cv2, sapply, `[`, 1)
+	type <- sapply (api$options, `[[`, 1)
+	cv2 <- lapply (api$options [type == "cv"], `[[`, 2)
+	cv <- lapply (cv2, sapply, `[`, 1)
 
 #------------------------------------------------------------------------------
 #  combine "..." and "args"; convert all arguments to character
-#  "args" remains "list" to accommodate (for instance) vectors of IDs
+#  convert unmeaningfull args (such as NULL, NA_character_, integer(0), ...) to character(0)
+#  ... so we don't get an awkward character representation.
+#  "args" remains "list" to accommodate vectors of IDs
+#  (maybe there are some other good reasons too)
 #------------------------------------------------------------------------------
-	args <- append(list(...), args)
-	args <- lapply(args, as.character)
+	args <- append (list(...), args)
+	args <- lapply (args, function (x) {
+		if (is.null (x) || !length (x)) {
+			""
+		} else {
+			x [is.na (x)] <- ""
+			as.character (x)
+			} 
+		} )
 	if (length (args)) {
 
 #####------------------------------------------------------------------------------
@@ -234,11 +261,11 @@ call.MGRAST <- function (
 #####  after this, all parameters will have a (possibly abbreviated) name
 #####------------------------------------------------------------------------------
 #####
-#####		if (is.null(names(args)))
-#####			is.na(names(args)) <- TRUE
-#####		j <- is.na(names(args)) | (names(args) == "")
+#####		if (is.null (names (args)))
+#####			is.na (names (args)) <- TRUE
+#####		j <- is.na (names (args)) | (names (args) == "")
 #####		if (any (j)) 
-#####			names(args)[j] <- required
+#####			names (args)[j] <- required
 
 #------------------------------------------------------------------------------
 #  note:  instead of the above, we simply require all parameters to be named
@@ -299,11 +326,10 @@ call.MGRAST <- function (
 
 		required.str <- paste(args[required.index], sep="/")
 		optional.str <- paste(names(args)[optional.index], args[optional.index], sep="=", collapse="&")
-	}
-	else {
-		required.str <- character(0)
-		optional.str <- character(0)
-	}
+	} else {
+		required.str <- ""
+		optional.str <- ""
+		}
 
 #------------------------------------------------------------------------------
 #  construct the complete URL string.  first, the "path" (i.e., before "?").  but:
@@ -313,17 +339,18 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 	call.url <- paste (c (
 		get("server", .MGRAST), 
+		get("API.version", .MGRAST), 
 		resource,
 		if (length (request) && resource %in% c('annotation','compute','inbox','m5nr','matrix','metadata','validation'))
 			request,
-		if (length (required.str))
+		if (length (required.str) && nchar (required.str))
 			required.str),
 		collapse = '/')
 
 #------------------------------------------------------------------------------
 #  ...and attach any optional parameters after "?"
 #------------------------------------------------------------------------------
-	if (length (optional.str))
+	if (length (optional.str) && nchar (optional.str))
 		call.url <- paste (call.url, optional.str, sep="?")
 
 #------------------------------------------------------------------------------
@@ -340,12 +367,12 @@ call.MGRAST <- function (
 
 	timeout.old <- getOption ("timeout")
 	options (timeout = timeout)
-	if (!is.null (file)) {
-		download.file (call.url, file, quiet=quiet)
+	if (!is.null (destfile)) {
+		download.file (call.url, destfile, quiet=quiet)
 		if (parse || verify)
 			warning ("saved resource to file and ignored parse= or verify=TRUE")
 		options (timeout = timeout.old)
-		return (file)
+		return (destfile)
 		}
 	x <- readLines (call.url, warn = !quiet)
 	options (timeout = timeout.old)
@@ -416,11 +443,22 @@ API.filename	<- "API.rda"
 
 API.file		<- function () file.path (find.package (this.package ()), "extdata", API.filename)
 
+#------------------------------------------------------------------------------
+# Note: 
+# A few places in the package source address API versioning.
+# Here, the version number is assigned.
+# It is documented in DESCRIPTION.
+# call.MGRAST() appends it to any call.
+# parse.MGRAST() removes any version number from API URLs.
+# Currently, we call API v.1
+#------------------------------------------------------------------------------
+
 .onAttach <- function (libname, pkgname) { 
 	ss <- " build XXXBUILDXXX"
 	if (substr (ss, 8, 15) == "XXXBUILD") ss <- ""
 	packageStartupMessage (pkgname, " (", packageVersion (pkgname), ss, ")")
 	assign ("server", "http://api.metagenomics.anl.gov", .MGRAST)
+	assign ("API.version", "1", .MGRAST)
 	assign ("this.package", pkgname, .MGRAST)
 	load (API.file(), .MGRAST)
 	}
