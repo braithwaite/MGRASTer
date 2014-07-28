@@ -194,8 +194,8 @@ for (xx in ee) {
 
 ff <- list()
 for (xx in ee) {
-	ff [[xx]] <- tempfile (li$resource)
 	li <- parse.MGRAST (xx)
+	ff [[xx]] <- tempfile (li$resource)
 	li [c ('quiet', 'destfile', 'issue')] <- list (TRUE, ff [[xx]], FALSE)
 	res <- try (do.call (call.MGRAST, li))
 	if (xx == res) {

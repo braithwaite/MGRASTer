@@ -294,7 +294,7 @@ call.MGRAST <- function (
 				default=NULL)
 			if (!is.null (prefix)) {
 				flat <- unlist (sapply(args [ii], scrubIDs, prefix))
-				names(flat) <- rep_len ("id", length(flat))
+				names(flat) <- rep ("id", length.out=length(flat))
 				args <- append (as.list(flat), args [!ii])
 				}
 			}

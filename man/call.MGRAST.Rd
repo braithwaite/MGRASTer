@@ -12,8 +12,9 @@ environment to provided resources, as well as facilitating export.
 }
 
 \usage{
-call.MGRAST(resource, request, ..., args=NULL, destfile=NULL, parse=is.null(destfile), verify=parse, 
-  bugs=c("ignore", "warn", "stop", "ask", "report"), quiet=TRUE, timeout=300, issue=TRUE)
+call.MGRAST(resource, request, ..., args=NULL, destfile=NULL, parse=is.null(destfile), 
+  verify=parse, bugs=c("ignore", "warn", "stop", "ask", "report"), quiet=TRUE,
+  timeout=300, issue=TRUE)
 parse.MGRAST(call.url)
 }
 \arguments{
@@ -90,7 +91,8 @@ Daniel T. Braithwaite
 \dontrun{
 parse.MGRAST ("http://api.metagenomics.anl.gov/download/mgm4447943.3?file=350.1")
 call.MGRAST ("down", "inst", id=4447943.3, file=350.1, destfile="my.file")
-parse.MGRAST (call.MGRAST (issue=FALSE, "down", "inst", id=4447943.3, file=350.1, destfile="my.file"))
+parse.MGRAST (call.MGRAST (issue=FALSE, "down", "inst", id=4447943.3, file=350.1, 
+	destfile="my.file"))
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/download/mgm4447943.3?stage=650")
 ll <- list (id=4447943.3, stage=650)
@@ -98,15 +100,18 @@ call.MGRAST ("down", "set", args=ll)
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/library?limit=20&order=name")
 call.MGRAST ("lib", "query", lim=20, ord="name")
-do.call (call.MGRAST, parse.MGRAST ("http://api.metagenomics.anl.gov/library?limit=20&order=name"))
+do.call (call.MGRAST, 
+	parse.MGRAST ("http://api.metagenomics.anl.gov/library?limit=20&order=name"))
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/library/mgl52924?verbosity=full")
 call.MGRAST ("lib", "inst", id=52924, verb="full")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/ontology?source=Subsystems&min_level=level3")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/m5nr/ontology?source=Subsystems&min_level=level3")
 call.MGRAST ("m5", "ont", source="Sub", min="level3")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/taxonomy?filter=Bacteroidetes&filter_level=phylum&min_level=genus")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/m5nr/taxonomy?filter=Bacteroidetes&filter_level=phylum&min_level=genus")
 call.MGRAST ("m5", "tax", filter="Bacteroidetes", filter_lev="phylum", min="genus")
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/sources")
@@ -118,7 +123,8 @@ call.MGRAST ("m5", "acc", id="YP_003268079.1")
 parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/alias/IPR001478")
 call.MGRAST ("m5", "alias", text="IPR001478")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/md5/000821a2e2f63df1a3873e4b280002a8?source=InterPro")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/m5nr/md5/000821a2e2f63df1a3873e4b280002a8?source=InterPro")
 call.MGRAST ("m5", "md5", id="000821a2e2f63df1a3873e4b280002a8", source="InterPro")
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/function/sulfatase?source=GenBank")
@@ -127,17 +133,22 @@ call.MGRAST ("m5", "func", text="sulfatase", source="GenBank")
 parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/organism/akkermansia?source=KEGG")
 call.MGRAST ("m5", "org", text="akkermansia", source="KEGG")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/sequence/MAGENHQWQGSIL?source=TrEMBL")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/m5nr/sequence/MAGENHQWQGSIL?source=TrEMBL")
 call.MGRAST ("m5", "seq", text="MAGENHQWQGSIL", source="TrEMBL")
 
 xx <- c(4447943.3, 4447192.3, 4447102.3, 4447103.3)
-parse.MGRAST ("http://api.metagenomics.anl.gov/matrix/organism?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&group_level=family&source=RefSeq&result_type=abundance&evalue=15")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/matrix/organism?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&group_level=family&source=RefSeq&result_type=abundance&evalue=15")
 call.MGRAST ("matr", "org", id=xx, group="family", source="Ref", res="abund", eval=15)
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/matrix/function?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&group_level=level3&source=Subsystems&result_type=abundance&identity=80&filter_level=phylum&filter=Firmicutes")
-call.MGRAST ("matr", "func", id=xx, group="level3", source="Sub", res="ab", ident=80, filter_lev="phylum", filter="Firmicutes")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/matrix/function?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&group_level=level3&source=Subsystems&result_type=abundance&identity=80&filter_level=phylum&filter=Firmicutes")
+call.MGRAST ("matr", "func", id=xx, group="level3", source="Sub", res="ab", ident=80, 
+	filter_lev="phylum", filter="Firmicutes")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/matrix/feature?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&source=KEGG&result_type=evalue&length=25")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/matrix/feature?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3&source=KEGG&result_type=evalue&length=25")
 call.MGRAST ("matr", "feat", id=xx, source="KEGG", res="ev", len=25)
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/metadata/template")
@@ -152,7 +163,8 @@ call.MGRAST ("metadata", "exp", id=128)
 parse.MGRAST ("http://api.metagenomics.anl.gov/metagenome?limit=20&order=name")
 call.MGRAST ("metagenome","query", lim=20, ord="name")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/metagenome/mgm4447943.3?verbosity=metadata")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/metagenome/mgm4447943.3?verbosity=metadata")
 call.MGRAST ("metagenome","inst", id=4447943.3, verb="meta")
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/project?limit=20&order=name")
@@ -173,16 +185,24 @@ call.MGRAST ("valid", "temp")
 parse.MGRAST ("http://api.metagenomics.anl.gov/validation/data/?template=")
 call.MGRAST ("valid", "data")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/annotation/sequence/mgm4447943.3?evalue=10&type=organism&source=SwissProt")
-call.MGRAST ("annot", "seq", id=4447943.3, eval=10, type="org", source="Swiss", destfile="my.file")
-parse.MGRAST (call.MGRAST (issue=FALSE, "annot", "seq", id=4447943.3, eval=10, type="org", source="Swiss", destfile="my.file"))
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/annotation/sequence/mgm4447943.3?evalue=10&type=organism&source=SwissProt")
+call.MGRAST ("annot", "seq", id=4447943.3, eval=10, type="org", source="Swiss", 
+	destfile="my.file")
+parse.MGRAST (call.MGRAST (issue=FALSE, "annot", "seq", id=4447943.3, eval=10, 
+	type="org", source="Swiss", destfile="my.file"))
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/annotation/similarity/mgm4447943.3?identity=80&type=function&source=KO")
-call.MGRAST ("annot", "sim", id=4447943.3, ident=80, type="fu", source="KO", destfile="my.file")
-parse.MGRAST (call.MGRAST (issue=FALSE, "annot", "seq", id=4447943.3, eval=10, type="org", source="Swiss", destfile="my.file"))
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/annotation/similarity/mgm4447943.3?identity=80&type=function&source=KO")
+call.MGRAST ("annot", "sim", id=4447943.3, ident=80, type="fu", source="KO", 
+	destfile="my.file")
+parse.MGRAST (call.MGRAST (issue=FALSE, "annot", "seq", id=4447943.3, eval=10, 
+	type="org", source="Swiss", destfile="my.file"))
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/compute/alphadiversity/mgm4447943.3?level=order")
+parse.MGRAST (
+	"http://api.metagenomics.anl.gov/compute/alphadiversity/mgm4447943.3?level=order")
 call.MGRAST ("comp", "alpha", id=4447943.3, lev="order")
-do.call (call.MGRAST, parse.MGRAST ("http://api.metagenomics.anl.gov/compute/alphadiversity/mgm4447943.3?level=order"))
+do.call (call.MGRAST, parse.MGRAST (
+	"http://api.metagenomics.anl.gov/compute/alphadiversity/mgm4447943.3?level=order"))
 }
 }
