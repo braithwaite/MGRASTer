@@ -7,7 +7,7 @@ Imports:
 Suggests: RJSONIO
 URL: https://github.com/braithwaite/MGRASTer/
 Date: 2014-07-28
-Author: Daniel T. Braithwaite [aut, cre]
+Author: Daniel T. Braithwaite
 Maintainer: Daniel T. Braithwaite <contact.dtb@gmail.com>
 Authors@R: person (c("Daniel", "T."), "Braithwaite", role=c("aut", "cre"), email="contact.dtb@gmail.com")
 Description: Convenience Functions for R Language Access to the v.1 API of the MG-RAST Metagenome Annotation Server, part of the US Department of Energy (DOE) Systems Biology Knowledge Base (KBase).
