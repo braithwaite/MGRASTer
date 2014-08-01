@@ -16,5 +16,4 @@ Copyright: University of Chicago
 LazyLoad: yes
 LazyData: yes
 LazyDataCompression: xz
-BuildVignettes: no
 Collate: source.R

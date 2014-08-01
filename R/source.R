@@ -454,7 +454,7 @@ API.file		<- function () file.path (find.package (this.package ()), "extdata", A
 #------------------------------------------------------------------------------
 
 .onAttach <- function (libname, pkgname) { 
-	ss <- " build XXXBUILDXXX"
+	ss <- " XXXBUILDXXX"
 	if (substr (ss, 8, 15) == "XXXBUILD") ss <- ""
 	packageStartupMessage (pkgname, " (", packageVersion (pkgname), ss, ")")
 	assign ("server", "http://api.metagenomics.anl.gov", .MGRAST)
