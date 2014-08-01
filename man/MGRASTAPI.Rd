@@ -64,12 +64,18 @@ Daniel T. Braithwaite
 
 \examples{
 \dontrun{
-API <- get ("API", .MGRAST)				# get copy currently in use
-API <- load.MGRAST()					# get copy distributed with the package
+##  get API currently in use
+API <- get ("API", .MGRAST)
 
-build.MGRAST ("my_copy.rda")			# save a new (possibly updated) copy
-API <- load.MGRAST ("my_copy.rda")		# load it into the workspace
-assign ("API", API, .MGRAST)			# put it into efileect
+##  compare to API distributed with the package
+identical (API, load.MGRAST())
+
+##  build and save a new (possibly updated) copy
+build.MGRAST ("my_copy.rda")
+
+##  load it
+API <- load.MGRAST ("my_copy.rda")
+
+##  put it into effect
+assign ("API", API, .MGRAST)			
 }}
-
-

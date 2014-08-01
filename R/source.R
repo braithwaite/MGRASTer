@@ -52,8 +52,7 @@ doc.MGRAST <- function (depth = 1, stratum = NULL, head = NULL, ...) {
 load.MGRAST <- function (ff = API.file()) {
 	if (!is.null (ff)) {
 		load (ff)
-		if ("API" %in% ls()) return (invisible (API))
-		else stop ("object \"API\" not found in ", ff)
+		return (get ("API", inherits=FALSE))
 	} else get ("API", .MGRAST)
 	}
 
@@ -96,7 +95,8 @@ build.MGRAST <- function (ff = API.filename) {
 
 	if (length (ff)) {
 		save (API, file=ff)
-		message ("Wrote object \"API\" to ", ff, " in ", getwd(), "\nMove to ", file.path (this.package(), "inst", "extdata"))
+		message ("Wrote object \"API\" to ", ff, " in ", getwd(), 
+			"\nFor package build, move to ", file.path (this.package(), "inst", "extdata"))
 		ff
 		}
 	else invisible(API)

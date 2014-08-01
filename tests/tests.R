@@ -5,24 +5,33 @@
 #  independent of changes to that API.
 #
 #  The MG-RAST API is developed in a dynamic environment.  Our goal here is
-#  for package functionality to degrade gracefully in the face of API changes,
+#  for package functionality to handle well in the face of significant API changes,
 #  patches, hotfixes, etc.
 #
 #  (Of course, this only applies to interim periods between package versions,
 #  which do regularly incorporate latest API updates.)
-
+#
 #  In particular, these package tests test the package, not the API.  They are 
 #  written with the thought that the package will still "work" in a formal sense,
-#  even when the API does not.
+#  even when the API does not.  This refers to buggy behavior, s as well as 
+#  occasional server downtime.
 #
-#  Part of this approach is the effort made to enable dynamically accommodate
-#  API updates, comprised of the build.MGRAST() and load.MGRAST() functions.
-#  They only go so far, of course.
+#  The effort made to accommodate API updates dynamically is par of this approach, 
+#  comprised of the build.MGRAST() and load.MGRAST() functions.  They can only 
+#  provide so much resilience, of course.
 #
+#  One of the challenges of this project has been that, although the API
+#  is formally specified, best results in practice have required experimentation
+#  and been modeled on examples.
 #
-#  URLs from API documentation, copied by hand, April 2014.
-#  these are copied in the doc examples of call.MGRAST() and parse.MGRAST().
-#  if these are updated, so should those be.
+#  Accordingly, these URLs from API documentation form the backbone of testing. 
+#  Some are also copied to the doc examples of call.MGRAST() and parse.MGRAST().
+#  Updates here may require updates there.  Last updated April 2014.
+#
+#  Per correspondence with CRAN, the policy in these tests is not to actually
+#  attempt communicaton with the MG-RAST API server.  Such tests are present 
+#  below in comments, however.
+#
 #
 #  http://api.metagenomics.anl.gov/annotation/sequence/mgm4447943.3?evalue=10&type=organism&source=SwissProt
 #  http://api.metagenomics.anl.gov/annotation/similarity/mgm4447943.3?identity=80&type=function&source=KO
@@ -109,7 +118,7 @@ doc.MGRAST (2, head = c('mat','func','param','opt','group_level'))
 #  test URL construction from arguments, without issuing any calls.
 #
 #  the first set are calls from API documentation, adapted by hand, April 2014.
-#  these are copied in the doc examples of call.MGRAST() and parse.MGRAST().
+#  some are copied in the doc examples of call.MGRAST() and parse.MGRAST().
 #  if these are updated, so should those be.  (see above for the original URLs.)
 #
 #  the second set are test cases put together by hand.
@@ -165,13 +174,13 @@ try (call.MGRAST ("mat", "func", filter="a", filter_l="b", filter_s="c", issue=F
 #-----------------------------------------------------------------------------
 #  test calls retrieving info pages
 #-----------------------------------------------------------------------------
-
-for (xx in names (API)) {
-	if (!inherits (try (call.MGRAST (xx, 'info', verify=FALSE)), "try-error")) {
-		message ("\'info\' call successful for: ", xx)
-	} else
-		message ("\'info\' call failed for: ", xx)
-	}
+# 
+# for (xx in names (API)) {
+# 	if (!inherits (try (call.MGRAST (xx, 'info', verify=FALSE)), "try-error")) {
+# 		message ("\'info\' call successful for: ", xx)
+# 	} else
+# 		message ("\'info\' call failed for: ", xx)
+# 	}
 
 #-----------------------------------------------------------------------------
 #  test parsing of URLs from API documentation, without issuing calls.
@@ -183,11 +192,11 @@ ee <- unname(ee) [substr(ee, 1, 4) == "http"]
 
 for (xx in ee) {
 	message ("Parsing test URL: ", xx)
-	print (try (parse.MGRAST (xx)))
+	str (try (parse.MGRAST (xx)))
 	}
 
 #-----------------------------------------------------------------------------
-#  test parsing of URLS from API documentation, and the calls themselves.
+#  test parsing of URLS from API documentation [and the calls themselves]
 #  for simplicity, we send all results to file,
 #  rather than bothering to identify cases where that's definitely required.
 #-----------------------------------------------------------------------------
@@ -197,13 +206,18 @@ for (xx in ee) {
 	li <- parse.MGRAST (xx)
 	ff [[xx]] <- tempfile (li$resource)
 	li [c ('quiet', 'destfile', 'issue')] <- list (TRUE, ff [[xx]], FALSE)
-	res <- try (do.call (call.MGRAST, li))
+	res <- try (do.call (call.MGRAST, li))	
 	if (xx == res) {
-		message ('Calling matched URL: ', xx)
+		message ('Matched URL: ', xx)
 	} else
-		message('Calling unmatched URL:\n\t', xx, '\n\t', res)
-	li$issue <- TRUE
-	try (do.call (call.MGRAST, li))
+		message('Unmatched URL:\n\t', xx, '\n\t', res)
+
+#	li$issue <- TRUE
+#	try (do.call (call.MGRAST, li))
+
 	}
 print (unlist (unname (ff)))
 sapply (ff, unlink)
+
+
+
