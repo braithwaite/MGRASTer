@@ -39,7 +39,7 @@ This documentation assumes familiarity with the MG-RAST API, which is described 
 given in \code{\ldots} and must be named.  In general, parameters should be length-one \code{character} vectors,
 which is what is meant by "string", above.  
 Regardless, parameters are coerced by
-\code{as.character}.  Parameters may also be given with \code{param}, which must be a named
+\code{as.character}.  Parameters may also be given with \code{args}, which must be a named
 list.  Partial \code{resource}, \code{request}, and parameter names are matched wherever possible, as are
 partial parameter values tied to a controlled vocabulary.
 
@@ -47,7 +47,7 @@ Parameters named \code{id}  are specially handled with some helpful scrubbing.  
 \code{mgl}, \code{mgm}, \code{mgp}, and \code{mgs} are added as necessary, and multiple \code{id}s given in a vector are
 separated.
 
-For certain resource-request pairs, \code{destfile} is mandatory.  For all others, it is optional.
+For certain resource-request combinations, \code{destfile} is mandatory.  For all others, it is optional.
 When \code{verify=TRUE} a check is made that all documented components for a resource-request
 are actually received.
 
@@ -90,12 +90,12 @@ Daniel T. Braithwaite
 \examples{
 \dontrun{
 ##  The calls below are adapted from the MG-RAST API documentation pages.
-##  For most resources types, at least one example is present.
+##  An example is provided for most resource types.
 ##  Note that resources are returned invisibly by call.MGRAST().
 ##  These examples are "not run" because they take too long.
 
 ##
-##  using call.MGRAST(), parse.MGRAST(), and do.call() together
+##  Use of call.MGRAST(), parse.MGRAST(), and do.call() together
 
 parse.MGRAST ("http://api.metagenomics.anl.gov/download/mgm4447943.3?stage=650")
 ll <- list (id=4447943.3, stage=650)
