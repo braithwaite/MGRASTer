@@ -10,3 +10,4 @@ Key components are the functions:
 	call.MGRAST()
 	parse.MGRAST()
 	doc.MGRAST()
+	auth.MGRAST()
