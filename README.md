@@ -1,6 +1,5 @@
-Package MGRASTer is a wrapper for R language access to 
-the API of the MG-RAST metagenome annotation engine, part of the
-US Department of Energy (DOE) Systems Biology Knowledge Base (KBase).
+Package MGRASTer is a wrapper for R language access to
+the API of the MG-RAST Metagenomics Analysis Server.
 See: http://api.metagenomics.anl.gov
 and: http://metagenomics.anl.gov
 and: http://kbase.us.
@@ -12,7 +11,7 @@ Key components are the functions:
 	doc.MGRAST()
 	auth.MGRAST()
 
-CRAN (Comprehensive R Archive Network) hosts 
+CRAN (Comprehensive R Archive Network) hosts
 the [package](http://cran.r-project.org/web/packages/MGRASTer/index.html)
-including 
+including
 its [manual](http://cran.r-project.org/web/packages/MGRASTer/MGRASTer.pdf).

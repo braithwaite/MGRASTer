@@ -1,37 +1,11 @@
 ##############################################################################
 #
-#  Although this package is essentially a wrapper for a distinct API,
-#  the design is intended to ensure stability with respect to the R platform,
-#  independent of changes to that API.
+#  The API is formally specified, but in practice, best results come from experimentation
+#  and following the not-always-consistent examples provided in documentation.
 #
-#  The MG-RAST API is developed in a dynamic environment.  Our goal here is
-#  for package functionality to handle well in the face of significant API changes,
-#  patches, hotfixes, etc.
-#
-#  (Of course, this only applies to interim periods between package versions,
-#  which do regularly incorporate latest API updates.)
-#
-#  In particular, these package tests test the package, not the API.  They are 
-#  written with the thought that the package will still "work" in a formal sense,
-#  even when the API does not.  This refers to buggy behavior, s as well as 
-#  occasional server downtime.
-#
-#  The effort made to accommodate API updates dynamically is par of this approach, 
-#  comprised of the build.MGRAST() and load.MGRAST() functions.  They can only 
-#  provide so much resilience, of course.
-#
-#  One of the challenges of this project has been that, although the API
-#  is formally specified, best results in practice have required experimentation
-#  and been modeled on examples.
-#
-#  Accordingly, these URLs from API documentation form the backbone of testing. 
-#  Some are also copied to the doc examples of call.MGRAST() and parse.MGRAST().
-#  Updates here may require updates there.  Last updated April 2014.
-#
-#  Per correspondence with CRAN, the policy in these tests is not to actually
-#  attempt communicaton with the MG-RAST API server.  Such tests are present 
-#  below in comments, however.
-#
+#  Accordingly here, testing is based on those examples, which are provided as URLs.
+#  The URLs are listed below as of April 2014.
+#  Changes to these examples might require also changing the examples of call.MGRAST.Rd.
 #
 #  http://api.metagenomics.anl.gov/annotation/sequence/mgm4447943.3?evalue=10&type=organism&source=SwissProt
 #  http://api.metagenomics.anl.gov/annotation/similarity/mgm4447943.3?identity=80&type=function&source=KO
@@ -64,6 +38,14 @@
 #  http://api.metagenomics.anl.gov/validation/template/
 #  http://api.metagenomics.anl.gov/validation/data/?template=
 #
+#  CRAN asks that tests not actually communicate with MG-RAST.
+#  "Live" tests are below for development, but in comments for CRAN.
+#
+#  So the sense of "testing" on CRAN is very limited.
+#  Only the package is tested : the API is not meaningfully tested.
+#  Indeed the package "works" even when the API does not work as expected,
+#  for instance due to an actual change, server downtime, or any unexplained glitch.
+#
 ##############################################################################
 
 
@@ -92,8 +74,8 @@ doc.MGRAST(2)
 doc.MGRAST(3)
 
 doc.MGRAST (head="matrix")
-doc.MGRAST (2, head="matrix")
-doc.MGRAST (3, head="matrix")
+doc.MGRAST (2, "matrix")
+doc.MGRAST (3, "matrix")
 
 doc.MGRAST (stratum="parameters")
 doc.MGRAST (2, stratum="parameters")
@@ -111,8 +93,8 @@ doc.MGRAST (stratum="attributes")
 doc.MGRAST (2, stratum="attributes")
 doc.MGRAST (3, stratum="attributes")
 
-doc.MGRAST (2, head = c('mat','orga','param','opt','group_level'))
-doc.MGRAST (2, head = c('mat','func','param','opt','group_level'))
+doc.MGRAST (2, c('mat','orga','param','opt','group_level'))
+doc.MGRAST (2, c('mat','func','param','opt','group_level'))
 
 #-----------------------------------------------------------------------------
 #  test URL construction from arguments, without issuing any calls.

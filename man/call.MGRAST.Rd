@@ -3,78 +3,73 @@
 \alias{parse.MGRAST}
 
 \title{
-Interface to MG-RAST API
+Call MG-RAST API
 }
 
 \description{
-An interface to the MG-RAST API enabling convenient access in the R
-environment to provided resources, as well as facilitating export.
+Call a specified resource of the MG-RAST API,
+or parse the URL of an API resource into component arguments.
 }
 
 \usage{
-call.MGRAST(resource, request, ..., args=NULL, destfile=NULL, parse=is.null(destfile), 
-  verify=parse, bugs=c("ignore", "warn", "stop", "ask", "report"), quiet=TRUE,
-  timeout=300, issue=TRUE)
-parse.MGRAST(call.url)
+call.MGRAST(resource, request, ..., args=NULL, file=NULL, timeout=300, 
+  parse=is.null(file), verify=parse, quiet=TRUE, issue=TRUE)
+parse.MGRAST(url)
 }
 \arguments{
-  \item{resource}{name of API resource (string)}
-  \item{request}{name of request, valid for the specified resource (string)}
-  \item{\dots}{required and/or optional parameters for the call}
-  \item{args}{further parameters (\code{list})}
-  \item{destfile}{file to save the retrieved resource (string)}
-  \item{parse}{attempt JSON parsing of result? (\code{logical})}
-  \item{verify}{check integrity of the returned object? (\code{logical})}
-  \item{bugs}{reporting action for API-side problems -- not used}
-  \item{quiet}{print debugging messages? (\code{logical})}
-  \item{timeout}{number of seconds to allow for the call (single \code{integer})}
-  \item{issue}{issue the call, or only return the constructed URL? (\code{logical})}
-  \item{call.url}{URL for an API resource (string)}
+  \item{resource}{name of resource (string)}
+  \item{request}{name of request (string)}
+  \item{\dots}{required and/or optional arguments}
+  \item{args}{more arguments (named \code{list})}
+  \item{file}{file to save received resource (string)}
+  \item{timeout}{call timeout in seconds (single \code{integer})}
+  \item{parse}{attempt JSON parsing? (\code{logical})}
+  \item{verify}{check completeness of received resource? (\code{logical})}
+  \item{quiet}{print less messages? (\code{logical})}
+  \item{issue}{issue the call? (\code{logical})}
+  \item{url}{URL of an API resource (string)}
 }
 
 \details{
-This documentation assumes familiarity with the MG-RAST API, which is described elsewhere.
+\code{resource} and \code{request} are required.
+Some calls require further arguments,
+which may be given in \code{\ldots} along with optional arguments.
+These all must be named.
+Arguments may also be given with \code{args}.
+Partial argument names,
+as well as partial values when drawn from a controlled vocabulary, are allowed.
+Arguments in general should be strings, that is, length-one \code{character} vectors.
+All are coerced by \code{as.character()}.
 
-\code{resource} and \code{request} are required for all API calls.  Optional and required parameters may be 
-given in \code{\ldots} and must be named.  In general, parameters should be length-one \code{character} vectors,
-which is what is meant by "string", above.  
-Regardless, parameters are coerced by
-\code{as.character}.  Parameters may also be given with \code{args}, which must be a named
-list.  Partial \code{resource}, \code{request}, and parameter names are matched wherever possible, as are
-partial parameter values tied to a controlled vocabulary.
+Some helpful scrubbing is applied to any argument named \code{id}.
+Multiple \code{id}s given in a string or vector are separated,
+and prefixes \code{mgl,mgm,mgp,mgs} are guessed and added.
+When \code{verify=TRUE} the received resource is checked for completeness.
+A good way to investigate unexpected results is setting \code{quiet=FALSE}
+to print additional diagnostic messages.
+Some calls require \code{file}, and it is optional for the rest.
 
-Parameters named \code{id}  are specially handled with some helpful scrubbing.  In particular, prefixes
-\code{mgl}, \code{mgm}, \code{mgp}, and \code{mgs} are added as necessary, and multiple \code{id}s given in a vector are
-separated.
-
-For certain resource-request combinations, \code{destfile} is mandatory.  For all others, it is optional.
-When \code{verify=TRUE} a check is made that all documented components for a resource-request
-are actually received.
-
-Setting \code{quiet=FALSE} can help shed light on unexpected results.
-
-\code{parse.MGRAST()} tokenizes a valid API URL.  If \code{x} is a URL validly requesting an API resource, 
-then \code{do.call(call.MGRAST, parse.MGRAST(x))} will retrieve that resource.
+\code{parse.MGRAST()} separates the URL of an API resource into named components.
+If \code{x} is the URL of an API resource, 
+then \code{do.call(call.MGRAST, parse.MGRAST(x))} retrieves that resource.
 }
 
 \value{
-For \code{call.MGRAST()}, a \code{list} mirroring the JSON structure of the received resource (invisibly).
-But if \code{parse=FALSE}, then the resource, uninterpreted.
-For non-JSON resources, \code{parse} is ignored.
+Invisibly, a \code{list} mirroring the JSON structure of the received resource,
+or if \code{parse=FALSE} then the uninterpreted resource.
+(For non-JSON resources \code{parse} is ignored.)
+If \code{file} is provided, the resource is written there and the filename returned instead.
+Parsed JSON is written in .rda format (with \code{save()})
+and anything else is written as received.
+If \code{issue=FALSE} then a URL for the specified resource is returned and no call is made.
 
-But if \code{destfile} is not \code{NULL} and the resource was successfully written to \code{destfile}, then \code{destfile}.
-If \code{parse=TRUE} and relevant, the file is written in .rda format, otherwise raw (usually meaning, 
-as legible text).
-
-Only a URL for the specified resource, if \code{issue=FALSE}.
-
-For \code{parse.MGRAST()}, a named \code{list} including \code{resource}, \code{request}, and further parameters for the 
-indicated API call.
+For \code{parse.MGRAST()}, a named \code{list} including \code{resource}, 
+\code{request}, and any other arguments extracted from the URL provided.
 }
 
 \seealso{
 \code{\link{doc.MGRAST}}, 
-\code{\link{MGRASTAPI}}
+\code{\link{MGRAST}}
 }
 
 \author{
@@ -91,7 +86,6 @@ Daniel T. Braithwaite
 \dontrun{
 ##  The calls below are adapted from the MG-RAST API documentation pages.
 ##  An example is provided for most resource types.
-##  Note that resources are returned invisibly by call.MGRAST().
 ##  These examples are "not run" because they take too long.
 
 ##
