@@ -225,7 +225,8 @@ call.MGRAST <- function (
 	parse=is.null(file), 					# parse JSON?
 	verify=parse,  							# check received resource?
 	quiet=TRUE,								# less diagnostics?
-	issue=TRUE								# issue the call?
+	issue=TRUE,								# issue the call?
+        destfile=NULL
 	) {
 
 	.MGRAST <- .MGRAST								# only for clean CRAN check
@@ -242,10 +243,10 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 #  warn if file name should be provided but is not
 #------------------------------------------------------------------------------
-	if (is.null (file) &&
+	if (is.null (destfile) &&
 		((resource == "annotation" && request %in% c("sequence", "similarity")) ||
 		(resource == "download" && request == "instance")))
-		stop (gettext ("resource requires \'file\'"))
+		stop (gettext ("resource requires \'destfile\'"))
 
 #------------------------------------------------------------------------------
 #  identify required and optional arguments
@@ -305,7 +306,7 @@ call.MGRAST <- function (
 		if (any(is.na(x)))
 			stop (gettext (
 				"no match or not unique for argument(s): "), 
-				collapse (names(args) [is.na (x)] ))
+				collapse (names(args) [is.na (x)], x ))
 		names(args) <- x
 
 #------------------------------------------------------------------------------
@@ -406,13 +407,13 @@ call.MGRAST <- function (
 
 	timeout.old <- getOption ("timeout")
 	options (timeout = timeout)
-	if (!is.null (file)) {
-		download.file (call.url, file, quiet=quiet)
+	if (!is.null (destfile)) {
+		download.file (call.url, destfile=destfile, quiet=quiet)
 		if (parse || verify)
 			warning (gettext (
 				"saving to file unimplemented with \'parse\' and \'verify\'; ignoring these"))
 		options (timeout = timeout.old)
-		return (file)
+		return (destfile)
 		}
 	x <- readLines (call.url, warn = !quiet)
 	options (timeout = timeout.old)
