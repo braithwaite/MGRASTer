@@ -412,7 +412,8 @@ call.MGRAST <- function (
 		cat (paste( gettext(cond)))
 		cat("HTTP Response: ")
 		cat ( system(  paste("curl -s ", gettext(call.url), " && echo" ), intern=TRUE ) )
-		cat("\n")
+		stop("\n")
+              
 		}
 	if (!is.null (destfile)) {
 		tryCatch(
