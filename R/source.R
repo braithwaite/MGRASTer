@@ -399,12 +399,16 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 #	require (RCurl)
 
+#------------------------------------------------------------------------------
+#  ... add curl dependency for https support
+#------------------------------------------------------------------------------
+        library(curl)
+
 	checkpoint ("requesting URL: ", call.url)
 
 #
 #  use "is.filebased()"
 #
-
 	timeout.old <- getOption ("timeout")
 	options (timeout = timeout)
 	showURIoutput <- function (cond) { # error handler for somethings wrong with download.file, show HTTP response + errors
@@ -426,7 +430,7 @@ call.MGRAST <- function (
 		return (destfile)
 		}
 	tryCatch(
-		{x <- readLines (call.url, warn = !quiet)},
+		{x <- readLines (curl(call.url), warn = !quiet)},
 		error=showURIoutput,  warning = showURIoutput )
 	options (timeout = timeout.old)
 
