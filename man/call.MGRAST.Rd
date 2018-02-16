@@ -77,9 +77,9 @@ Daniel T. Braithwaite
 }
 
 \references{
-\url{http://metagenomics.anl.gov} \cr
-\url{http://api.metagenomics.anl.gov} \cr
-\url{http://www.json.org}
+\url{https://mg-rast.org} \cr
+\url{https://api.mg-rast.org} \cr
+\url{https://www.json.org}
 }
 
 \examples{
@@ -91,21 +91,21 @@ Daniel T. Braithwaite
 ##
 ##  Use of call.MGRAST(), parse.MGRAST(), and do.call() together
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/download/mgm4447943.3?stage=650")
+parse.MGRAST ("http://api.mg-rast.org/download/mgm4447943.3?stage=650")
 ll <- list (id=4447943.3, stage=650)
 call.MGRAST ("down", "set", args=ll)
 
 print (tt <- tempfile())
-parse.MGRAST ("http://api.metagenomics.anl.gov/download/mgm4447943.3?file=350.1")
+parse.MGRAST ("http://api.mg-rast.org/download/mgm4447943.3?file=350.1")
 call.MGRAST ("down", "inst", id=4447943.3, file=350.1, destfile=tt)
 parse.MGRAST (call.MGRAST (issue=FALSE, "down", "inst", id=4447943.3, file=350.1, 
 	destfile=tt))
 unlink (tt)
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/library?limit=20&order=name")
+parse.MGRAST ("http://api.mg-rast.org/library?limit=20&order=name")
 call.MGRAST ("lib", "query", lim=20, ord="name")
 do.call (call.MGRAST, 
-	parse.MGRAST ("http://api.metagenomics.anl.gov/library?limit=20&order=name"))
+	parse.MGRAST ("http://api.mg-rast.org/library?limit=20&order=name"))
 
 ##
 ##  accessing the "m5nr" resource
@@ -120,14 +120,14 @@ call.MGRAST ("m5", "seq", text="MAGENHQWQGSIL", source="TrEMBL")
 ##  parsing URLs for the calls above
 
 parse.MGRAST (
-	"http://api.metagenomics.anl.gov/m5nr/ontology?source=Subsystems&min_level=level3")
-parse.MGRAST (paste0 ("http://api.metagenomics.anl.gov/m5nr/taxonomy",
+	"http://api.mg-rast.org/m5nr/ontology?source=Subsystems&min_level=level3")
+parse.MGRAST (paste0 ("http://api.mg-rast.org/m5nr/taxonomy",
 	"?filter=Bacteroidetes&filter_level=phylum&min_level=genus"))
-parse.MGRAST (paste0 ("http://api.metagenomics.anl.gov/m5nr/md5/",
+parse.MGRAST (paste0 ("http://api.mg-rast.org/m5nr/md5/",
 	"000821a2e2f63df1a3873e4b280002a8?source=InterPro"))
-parse.MGRAST ("http://api.metagenomics.anl.gov/m5nr/function/sulfatase?source=GenBank")
+parse.MGRAST ("http://api.mg-rast.org/m5nr/function/sulfatase?source=GenBank")
 parse.MGRAST (
-	"http://api.metagenomics.anl.gov/m5nr/sequence/MAGENHQWQGSIL?source=TrEMBL")
+	"http://api.mg-rast.org/m5nr/sequence/MAGENHQWQGSIL?source=TrEMBL")
 
 ##
 ##  annotation data via the "matrix" resource,
@@ -145,33 +145,33 @@ call.MGRAST ("matrix", "feat", id=yy, source="KEGG", result="ev", len=25)
 ##  parsing URLs for the calls above
 
 parse.MGRAST (paste0 (
-	"http://api.metagenomics.anl.gov/matrix/organism",
+	"http://api.mg-rast.org/matrix/organism",
 	"?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3",
 	"&group_level=family&source=RefSeq&result_type=abundance&evalue=15"))
 parse.MGRAST (paste0 (
-	"http://api.metagenomics.anl.gov/matrix/function",
+	"http://api.mg-rast.org/matrix/function",
 	"?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3",
 	"&group_level=level3&source=Subsystems&result_type=abundance&identity=80",
 	"&filter_level=phylum&filter=Firmicutes"))
 parse.MGRAST (paste0 (
-	"http://api.metagenomics.anl.gov/matrix/feature",
+	"http://api.mg-rast.org/matrix/feature",
 	"?id=mgm4447943.3&id=mgm4447192.3&id=mgm4447102.3&id=mgm4447103.3",
 	"&source=KEGG&result_type=evalue&length=25"))
 
 ##
 ##  examples for still other resources
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/metadata/export/mgp128")
+parse.MGRAST ("http://api.mg-rast.org/metadata/export/mgp128")
 call.MGRAST ("metadata", "exp", id=128)
 
 parse.MGRAST (
-	"http://api.metagenomics.anl.gov/metagenome/mgm4447943.3?verbosity=metadata")
+	"http://api.mg-rast.org/metagenome/mgm4447943.3?verbosity=metadata")
 call.MGRAST ("metagenome","inst", id=4447943.3, verb="meta")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/project?limit=20&order=name")
+parse.MGRAST ("http://api.mg-rast.org/project?limit=20&order=name")
 call.MGRAST ("proj", "query", lim=20, ord="name")
 
-parse.MGRAST ("http://api.metagenomics.anl.gov/sample/mgs25823?verbosity=full")
+parse.MGRAST ("http://api.mg-rast.org/sample/mgs25823?verbosity=full")
 call.MGRAST ("samp", "inst", id=25823, verb="full")
 
 ##

@@ -42,8 +42,8 @@ Daniel T. Braithwaite
 }
 
 \references{
-\url{http://metagenomics.anl.gov} \cr
-\url{http://api.metagenomics.anl.gov} \cr
+\url{https://mg-rast.org} \cr
+\url{https://api.mg-rast.org} \cr
 }
 
 \examples{

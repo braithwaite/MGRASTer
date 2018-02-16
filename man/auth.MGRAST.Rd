@@ -19,7 +19,7 @@ auth.MGRAST(key, file)
 
 \details{
 Accessing private resources with the MG-RAST API requires an auth key.
-Log in at \url{http://metagenomics.anl.gov} to create a key, 
+Log in at \url{https://mg-rast.org} to create a key, 
 via "Preferences" on the "Account Management" page.
 Note you must click not only "generate new key" but also "set preferences"!
 Also note the key is only valid for a limited time.
@@ -36,8 +36,8 @@ The key value that has been set.
 }
 
 \references{
-\url{http://metagenomics.anl.gov} \cr
-\url{http://api.metagenomics.anl.gov} \cr
+\url{https://mg-rast.org} \cr
+\url{https://api.mg-rast.org} \cr
 }
 
 \author{
