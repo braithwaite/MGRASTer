@@ -1,8 +1,7 @@
 Package MGRASTer is a wrapper for R language access to
 the API of the MG-RAST Metagenomics Analysis Server.
-See: http://api.metagenomics.anl.gov
-and: http://metagenomics.anl.gov
-and: http://kbase.us.
+See: http://mg-rast.org
+and: http://api.mg-rast.org 
 
 Key components are the functions:
 

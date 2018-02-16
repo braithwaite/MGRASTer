@@ -505,6 +505,6 @@ API.filepath	<- function () file.path (find.package (this.package ()), "extdata"
 	assign ("this.package", pkgname, .MGRAST)
 	load (API.filepath(), .MGRAST)
 	assign ("API.version", "1", .MGRAST)
-	assign ("server", "http://api.metagenomics.anl.gov", .MGRAST)
+	assign ("server", "https://api.mg-rast.org", .MGRAST)
 	assign ('key', NULL, .MGRAST)
 	}
