@@ -306,7 +306,7 @@ call.MGRAST <- function (
 		if (any(is.na(x)))
 			stop (gettext (
 				"no match or not unique for argument(s): "), 
-				collapse (names(args) [is.na (x)], x ))
+				collapse (names(args) [is.na (x)]), x )
 		names(args) <- x
 
 #------------------------------------------------------------------------------
@@ -400,9 +400,8 @@ call.MGRAST <- function (
 #	require (RCurl)
 
 #------------------------------------------------------------------------------
-#  ... add curl dependency for https support
+#  ... add curl dependency for https support  (now in DESCRIPTION courtesy devtools::use_package)
 #------------------------------------------------------------------------------
-        library(curl)
 
 	checkpoint ("requesting URL: ", call.url)
 
@@ -430,7 +429,7 @@ call.MGRAST <- function (
 		return (destfile)
 		}
 	tryCatch(
-		{x <- readLines (curl(call.url), warn = !quiet)},
+		{x <- readLines (curl::curl(call.url), warn = !quiet)},
 		error=showURIoutput,  warning = showURIoutput )
 	options (timeout = timeout.old)
 

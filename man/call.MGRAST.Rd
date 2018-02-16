@@ -13,7 +13,7 @@ or parse the URL of an API resource into component arguments.
 
 \usage{
 call.MGRAST(resource, request, ..., args=NULL, file=NULL, timeout=300, 
-  parse=is.null(file), verify=parse, quiet=TRUE, issue=TRUE)
+  parse=is.null(file), verify=parse, quiet=TRUE, issue=TRUE, destfile=NULL)
 parse.MGRAST(url)
 }
 \arguments{
@@ -27,6 +27,7 @@ parse.MGRAST(url)
   \item{verify}{check completeness of received resource? (\code{logical})}
   \item{quiet}{print less messages? (\code{logical})}
   \item{issue}{issue the call? (\code{logical})}
+  \item{destfile}{output file name (string)}
   \item{url}{URL of an API resource (string)}
 }
 
