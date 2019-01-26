@@ -30,7 +30,7 @@
 #------------------------------------------------------------------------------
 #  set or query auth key in the package environment.
 #------------------------------------------------------------------------------
-
+#' @export
 auth.MGRAST <- function (key, file) {
 	.MGRAST <- .MGRAST								# only for clean CRAN check
 	if (! missing (file)) {
@@ -45,6 +45,7 @@ auth.MGRAST <- function (key, file) {
 #  little utility to inspect the API documentation tree.
 #------------------------------------------------------------------------------
 
+#' @export
 doc.MGRAST <- function (depth = 1, head = NULL, stratum = NULL, ...) {
 	.MGRAST <- .MGRAST								# only for clean CRAN check
 	api <- get ("API", .MGRAST)
@@ -70,6 +71,7 @@ doc.MGRAST <- function (depth = 1, head = NULL, stratum = NULL, ...) {
 #  does not reload into .MGRAST
 #------------------------------------------------------------------------------
 
+#' @export
 load.MGRAST <- function (file = API.filepath()) {
 	.MGRAST <- .MGRAST								# only for clean CRAN check
 	if (!is.null (file)) {
@@ -86,6 +88,7 @@ load.MGRAST <- function (file = API.filepath()) {
 #  does not reload into .MGRAST
 #------------------------------------------------------------------------------
 
+#' @export
 build.MGRAST <- function (file = API.filename) {
 	.MGRAST <- .MGRAST								# only for clean CRAN check
 
@@ -144,6 +147,7 @@ build.MGRAST <- function (file = API.filename) {
 #  index [-c(1,2)] drops unneeded parts of the match
 #------------------------------------------------------------------------------
 
+#' @export
 parse.MGRAST <- function (url) {
 	.MGRAST <- .MGRAST								# only for clean CRAN check
 	api <- get ("API", .MGRAST)
@@ -215,6 +219,7 @@ parse.MGRAST <- function (url) {
 ###############################################################################
 ###############################################################################
 
+#' @export
 call.MGRAST <- function (
 	resource, 								# what resource
 	request,								# what request
@@ -225,7 +230,8 @@ call.MGRAST <- function (
 	parse=is.null(file), 					# parse JSON?
 	verify=parse,  							# check received resource?
 	quiet=TRUE,								# less diagnostics?
-	issue=TRUE								# issue the call?
+	issue=TRUE,								# issue the call?
+        destfile=NULL
 	) {
 
 	.MGRAST <- .MGRAST								# only for clean CRAN check
@@ -242,10 +248,10 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 #  warn if file name should be provided but is not
 #------------------------------------------------------------------------------
-	if (is.null (file) &&
+	if (is.null (destfile) &&
 		((resource == "annotation" && request %in% c("sequence", "similarity")) ||
 		(resource == "download" && request == "instance")))
-		stop (gettext ("resource requires \'file\'"))
+		stop (gettext ("resource requires \'destfile\'"))
 
 #------------------------------------------------------------------------------
 #  identify required and optional arguments
@@ -305,7 +311,7 @@ call.MGRAST <- function (
 		if (any(is.na(x)))
 			stop (gettext (
 				"no match or not unique for argument(s): "), 
-				collapse (names(args) [is.na (x)] ))
+				collapse (names(args) [is.na (x)]), x )
 		names(args) <- x
 
 #------------------------------------------------------------------------------
@@ -398,23 +404,41 @@ call.MGRAST <- function (
 #------------------------------------------------------------------------------
 #	require (RCurl)
 
+#------------------------------------------------------------------------------
+#  ... add curl dependency for https support  (now in DESCRIPTION courtesy devtools::use_package)
+#------------------------------------------------------------------------------
+
 	checkpoint ("requesting URL: ", call.url)
 
 #
 #  use "is.filebased()"
 #
-
 	timeout.old <- getOption ("timeout")
 	options (timeout = timeout)
-	if (!is.null (file)) {
-		download.file (call.url, file, quiet=quiet)
+	showURIoutput <- function (cond) { # error handler for somethings wrong with download.file, show HTTP response + errors
+		cat( "Error getting URL:\n" )
+		cat (paste( gettext(cond)))
+		cat("HTTP Response: ")
+		cat ( system(  paste("curl -s ", gettext(call.url), " && echo" ), intern=TRUE ) )
+		stop("\n")
+              
+		}
+	if (!is.null (destfile)) {
+		tryCatch(
+		{download.file (call.url, destfile=destfile, quiet=FALSE)} ,
+		error=showURIoutput,  warning = showURIoutput )
 		if (parse || verify)
 			warning (gettext (
 				"saving to file unimplemented with \'parse\' and \'verify\'; ignoring these"))
 		options (timeout = timeout.old)
-		return (file)
+		return (destfile)
 		}
-	x <- readLines (call.url, warn = !quiet)
+	tryCatch(
+		{ con <- curl::curl(call.url)
+                x <- readLines (con, warn = !quiet)
+                close(con)
+                },
+		error=showURIoutput,  warning = showURIoutput )
 	options (timeout = timeout.old)
 
 #------------------------------------------------------------------------------
@@ -492,6 +516,6 @@ API.filepath	<- function () file.path (find.package (this.package ()), "extdata"
 	assign ("this.package", pkgname, .MGRAST)
 	load (API.filepath(), .MGRAST)
 	assign ("API.version", "1", .MGRAST)
-	assign ("server", "http://api.metagenomics.anl.gov", .MGRAST)
+	assign ("server", "https://api.mg-rast.org", .MGRAST)
 	assign ('key', NULL, .MGRAST)
 	}

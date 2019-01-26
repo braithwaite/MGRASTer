@@ -6,14 +6,19 @@ Authors@R: c(
  role = c("aut", "cre"), email = "contact.dtb@gmail.com"),
  person (c("University", "of"), "Chicago", role = "cph"))
 Version: 0.9.1
-Depends: R (>= 3.0), utils
-Imports: 
-Suggests: RJSONIO
+Depends:
+    R (>= 3.0),
+    utils
+Imports: curl
+Suggests:
+    RJSONIO
 URL: https://github.com/braithwaite/MGRASTer/
 Date: 2015-02-05
-Description: Convenience Functions for R Language Access to the v.1 API of the 
- MG-RAST Metagenomics Analysis Server.
+Description: Convenience Functions for R Language Access to the v.1 API of the
+    MG-RAST Metagenomics Analysis Server.
 License: BSD_2_clause + file LICENSE
 Copyright: University of Chicago
 LazyData: yes
-Collate: source.R
+Collate:
+    source.R
+RoxygenNote: 5.0.1

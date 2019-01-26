@@ -29,7 +29,7 @@ Naturally a new package version will always be compatible with a current API ver
 so this consideration applies to intervals between API and package updates.
 
 The environment \code{.MGRAST} contains a nested list structure \code{API}
-mirroring the API specification published at \url{http://api.metagenomics.anl.gov}.
+mirroring the API specification published at \url{https://api.mg-rast.org}.
 This "tree", consulted by \code{call.MGRAST()} and \code{parse.MGRAST()}, is local and prebuilt.
 However, build.MGRAST() and load.MGRAST() provide some degree of 
 adaptability to minor API changes by managing this local representation.
@@ -57,8 +57,8 @@ Daniel T. Braithwaite
 }
 
 \references{
-\url{http://metagenomics.anl.gov} \cr
-\url{http://api.metagenomics.anl.gov} \cr
+\url{http://mg-rast.org} \cr
+\url{http://api.mg-rast.org} \cr
 \url{http://www.json.org}
 }
 
